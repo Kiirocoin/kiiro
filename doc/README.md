@@ -1,9 +1,9 @@
-Kiirocoin Core 0.14.11.x
+Kiirocoin Core 1.0.0.0
 =====================
 
 Setup
 ---------------------
-[Kiirocoin Core] (https://kiirocoin.org/get-kiirocoin/download/) is the original Kiirocoin client and it builds the backbone of the network. However, it downloads and stores the entire history of Kiirocoin transactions (which is currently several hundreds MBs); depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more.
+[Kiirocoin Core] (https://kiirocoin.org/wallets/) is the original Kiirocoin client and it builds the backbone of the network. However, it downloads and stores the entire history of Kiirocoin transactions (which is currently several hundreds MBs); depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more.
 
 Running
 ---------------------
