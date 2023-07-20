@@ -101,8 +101,8 @@ Build Kiirocoin
 
 1.  Download the source:
 
-        git clone https://github.com/Kiirocoin/Kiirocore
-        cd kiirocoin
+        git clone https://github.com/Kiirocoin/kiiro
+        cd kiiro
 
 2.  Build dependencies and kiirocoin:
 
