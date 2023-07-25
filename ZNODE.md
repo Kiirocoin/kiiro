@@ -1,8 +1,8 @@
 Znode Build Instructions and Notes
 =============================
- - Version 0.1.6
- - Date: 14 December 2017
- - More detailed guide available here: https://kiirocoin.org/guide/masternode-setup.html
+ - Version 1.0.0.1
+ - Date: 25 July 2023
+ - More detailed guide available here: https://kiirocoin.org/masternode
 
 Prerequisites
 -------------
@@ -14,7 +14,7 @@ Step 1. Build
 ----------------------
 **1.1.**  Check out from source:
 
-    git clone https://github.com/kiirocoinorg/kiirocoin
+    git clone https://github.com/kiirocoinorg/kiiro
 
 **1.2.**  See [README.md](README.md) for instructions on building.
 
@@ -46,7 +46,7 @@ Step 3. First run on your Local Wallet
 
     ./src/kiirocoin-cli getaccountaddress 0
 
-**3.4.**  Send to received address **exactly 3000 KIIRO** in **1 transaction**. Wait for 15 confirmations.
+**3.4.**  Send to received address **exactly 1000 KIIRO** in **1 transaction**. Wait for 15 confirmations.
 
 **3.5.**  Stop daemon:
 
@@ -71,9 +71,9 @@ Step 4. In your VPS where you are hosting your Znode. Update config files
 
 **4.2.**  Create file **znode.conf** (in 2 folders **~/.kiirocoin** and **~/.kiirocoin/testnet3**) contains the following info:
  - LABEL: A one word name you make up to call your node (ex. ZN1)
- - IP:PORT: Your znode VPS's IP, and the port is always 18999.
+ - IP:PORT: Your znode VPS's IP, and the port is always 8999.
  - ZNODEPRIVKEY: This is the result of your "znode genkey" from earlier.
- - TRANSACTION HASH: The collateral tx. hash from the 3000 KIIRO deposit.
+ - TRANSACTION HASH: The collateral tx. hash from the 1000 KIIRO deposit.
  - INDEX: The Index is always 0 or 1.
 
 To get TRANSACTION HASH, run:
