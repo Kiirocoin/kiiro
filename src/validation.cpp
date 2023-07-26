@@ -3279,7 +3279,7 @@ void static UpdateTip(CBlockIndex *pindexNew, const CChainParams &chainParams) {
                 AlertNotify(strWarning);
                 fWarned = true;
             }
-        }/*
+        }*/
     }
     LogPrintf("%s: new best=%s height=%d version=0x%08x log2_work=%.8g tx=%lu date='%s' progress=%f cache=%.1fMiB(%utxo)", __func__,
       chainActive.Tip()->GetBlockHash().ToString(), chainActive.Height(), chainActive.Tip()->nVersion,
