@@ -54,8 +54,8 @@ static const int64_t DUST_HARD_LIMIT = 1000;   // 0.00001 FIRO mininput
 #define ZC_OLD_SIGMA_BAN_BLOCK          181850 //Approx July 22nd, 2019, 4:00 AM UTC
 
 // Block after which lelantus mints are activated.
-#define ZC_LELANTUS_STARTING_BLOCK         336888
-#define ZC_LELANTUS_FIXES_START_BLOCK      365544 //Approx April 22, 20211, 2:00 PM UTC
+#define ZC_LELANTUS_STARTING_BLOCK         33688
+#define ZC_LELANTUS_FIXES_START_BLOCK      36554 //Approx April 22, 20211, 2:00 PM UTC
 #define ZC_LELANTUS_TESTNET_STARTING_BLOCK 15700
 #define ZC_LELANTUS_TESTNET_FIXES_START_BLOCK   27600
 
