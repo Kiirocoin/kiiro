@@ -10,13 +10,13 @@
 static const int64_t DUST_HARD_LIMIT = 1000;   // 0.00001 FIRO mininput
 
 // There were bugs before this block, don't do some checks on early blocks
-#define ZC_CHECK_BUG_FIXED_AT_BLOCK         61168
+#define ZC_CHECK_BUG_FIXED_AT_BLOCK         41168
 
 // Before this block we allowed not paying to the znodes.
-#define ZC_ZNODE_PAYMENT_BUG_FIXED_AT_BLOCK         107246
+#define ZC_ZNODE_PAYMENT_BUG_FIXED_AT_BLOCK         53667
 
 // Do strict check on duplicate minted public coin value after this block
-#define ZC_CHECK_DUPLICATE_MINT_AT_BLOCK    70000
+#define ZC_CHECK_DUPLICATE_MINT_AT_BLOCK    60000
 
 // The mint id number to change to zerocoin v2
 #define ZC_V2_SWITCH_ID_1 200
@@ -32,30 +32,30 @@ static const int64_t DUST_HARD_LIMIT = 1000;   // 0.00001 FIRO mininput
 #define ZC_V2_TESTNET_SWITCH_ID_50 4
 #define ZC_V2_TESTNET_SWITCH_ID_100 10
 
-#define ZC_V1_5_STARTING_BLOCK          78500
+#define ZC_V1_5_STARTING_BLOCK          48500
 #define ZC_V1_5_TESTNET_STARTING_BLOCK  37954
 
 #define ZC_V1_5_GRACEFUL_MEMPOOL_PERIOD	500
 #define ZC_V1_5_GRACEFUL_PERIOD			1500
 
 // Block after which sigma mints are activated.
-#define ZC_SIGMA_STARTING_BLOCK         184200 //Approx July 30th, 2019, 8:00 AM UTC
+#define ZC_SIGMA_STARTING_BLOCK         24200 //Approx July 30th, 2019, 8:00 AM UTC
 #define ZC_SIGMA_TESTNET_STARTING_BLOCK 50000
 
 // Block after which anonymity sets are being padded.
-#define ZC_SIGMA_PADDING_BLOCK         220720 //Approx December 5th 12PM UTC
+#define ZC_SIGMA_PADDING_BLOCK         50720 //Approx December 5th 12PM UTC
 #define ZC_SIGMA_TESTNET_PADDING_BLOCK 110000
 
 //Block after whinch we are disabling sigma to enable after starting padding
-#define ZC_SIGMA_DISABLE_UNPADDED_BLOCK         219904 //December 2nd 12PM UTC
+#define ZC_SIGMA_DISABLE_UNPADDED_BLOCK         119904 //December 2nd 12PM UTC
 #define ZC_SIGMA_TESTNET_DISABLE_UNPADDED_BLOCK 109160
 
 // The block number after which old sigma clients are banned.
-#define ZC_OLD_SIGMA_BAN_BLOCK          181850 //Approx July 22nd, 2019, 4:00 AM UTC
+#define ZC_OLD_SIGMA_BAN_BLOCK          31850 //Approx July 22nd, 2019, 4:00 AM UTC
 
 // Block after which lelantus mints are activated.
-#define ZC_LELANTUS_STARTING_BLOCK         336888
-#define ZC_LELANTUS_FIXES_START_BLOCK      365540 //Approx April 22, 20211, 2:00 PM UTC
+#define ZC_LELANTUS_STARTING_BLOCK         39999
+#define ZC_LELANTUS_FIXES_START_BLOCK      42356 //Approx April 22, 20211, 2:00 PM UTC
 #define ZC_LELANTUS_TESTNET_STARTING_BLOCK 15700
 #define ZC_LELANTUS_TESTNET_FIXES_START_BLOCK   27600
 
