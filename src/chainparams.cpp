@@ -196,8 +196,8 @@ public:
         consensus.stage3DevelopmentFundAddress = "KWTco92wURX5Jwu3mMdWrs36j574meAvew";
         consensus.stage3CommunityFundAddress = "KDW8CeScVpWFzekvZm4f37qs5GxByEGSKE";
 
-        consensus.nStartBlacklist = 293990;
-        consensus.nStartDuplicationCheck = 293526;
+        consensus.nStartBlacklist = 29399;
+        consensus.nStartDuplicationCheck = 29352;
 
         consensus.nMajorityEnforceBlockUpgrade = 750;
         consensus.nMajorityRejectBlockOutdated = 950;
@@ -205,7 +205,7 @@ public:
         consensus.nMinNFactor = 10;
         consensus.nMaxNFactor = 30;
         consensus.nChainStartTime = 1689495903;
-        consensus.BIP34Height = 227931;
+        consensus.BIP34Height = 22793;
         consensus.BIP34Hash = uint256S("0x000000000000024b89b42a942fe0d9fea3bb44ab7bd1b19115dd6a759c0808b8");
         consensus.BIP65Height = INT_MAX;
         consensus.BIP66Height = INT_MAX;
@@ -253,7 +253,7 @@ public:
         consensus.nModulusV1MempoolStopBlock = ZC_MODULUS_V1_MEMPOOL_STOP_BLOCK;
 	    consensus.nModulusV1StopBlock = ZC_MODULUS_V1_STOP_BLOCK;
         consensus.nMultipleSpendInputsInOneTxStartBlock = ZC_MULTIPLE_SPEND_INPUT_STARTING_BLOCK;
-        consensus.nDontAllowDupTxsStartBlock = 119700;
+        consensus.nDontAllowDupTxsStartBlock = 89700;
 
         // znode params
         consensus.nZnodePaymentsStartBlock = HF_ZNODE_PAYMENT_START; // not true, but it's ok as long as it's less then nZnodePaymentsIncreaseBlock
@@ -280,7 +280,7 @@ public:
         consensus.llmqForInstantSend = Consensus::LLMQ_50_60;
         consensus.nInstantSendConfirmationsRequired = 2;
         consensus.nInstantSendKeepLock = 24;
-        consensus.nInstantSendBlockFilteringStartHeight = 421158;   // Approx Nov 2 2021 06:00:00 GMT+0000
+        consensus.nInstantSendBlockFilteringStartHeight = 42115;   // Approx Nov 2 2021 06:00:00 GMT+0000
 
         consensus.nMTPSwitchTime = SWITCH_TO_MTP_BLOCK_HEADER;
         consensus.nMTPStartBlock = 150;
@@ -293,7 +293,7 @@ public:
         consensus.nInitialMTPDifficulty = 0x1c021e57;
         consensus.nMTPRewardReduction = 2;
 
-        consensus.nDisableZerocoinStartBlock = 157000;
+        consensus.nDisableZerocoinStartBlock = 57000;
 
         nMaxTipAge = 6 * 60 * 60; // ~144 blocks behind -> 2 x fork detection time, was 24 * 60 * 60 in bitcoin
 
