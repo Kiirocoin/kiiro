@@ -53,7 +53,7 @@ Building requires Ubuntu 18.04 at minimum.
 
 Build requirements:
 
-    sudo apt-get install git curl python build-essential libtool automake pkg-config cmake
+    sudo apt-get install git curl python3 build-essential libtool automake pkg-config cmake
 
 BerkeleyDB is required for the wallet.
 
