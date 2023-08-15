@@ -75,7 +75,7 @@ Development Dependencies (compiler and build tools)
 
     ```
     sudo apt-get update
-    sudo apt-get install git curl python build-essential libtool automake pkg-config cmake
+    sudo apt-get install git curl python3 build-essential libtool automake pkg-config cmake
     # Also needed for GUI wallet only:
     sudo apt-get install qttools5-dev qttools5-dev-tools libxcb-xkb-dev bison
     ```
