@@ -128,7 +128,7 @@ uint256 CBlockHeader::GetPoWHash(int nHeight) const {
     } else if (Params().GetConsensus().IsMain()) {
         if (nHeight >= 20500) {
             // Lyra2Z
-            lyra2z_hash(BEGIN(nVersion), BEGIN(powHash));
+            powHash = GetHash();
         }
         else if (nHeight > 0) {
             // we take values from precomputed table because calculations of these are horribly slow
