@@ -35,6 +35,11 @@ static const bool DEFAULT_SPLASHSCREEN = true;
 #define COLOR_BLACK QColor(0, 0, 0)
 /* Transaction list -- TX status decoration - LockedByInstantSend color */
 #define COLOR_TX_STATUS_LOCKED QColor(0, 128, 255)
+/* Widget Background color - default color */
+#define COLOR_WHITE QColor(255, 255, 255)
+
+#define COLOR_KIIRO_FCB040 QColor("#FCB040")
+#define COLOR_KIIRO_C18632 QColor("#C18632")
 
 /* Tooltips longer than this (in characters) are converted into rich text,
    so that they can be word-wrapped.

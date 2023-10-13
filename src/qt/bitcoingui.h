@@ -37,6 +37,7 @@ QT_BEGIN_NAMESPACE
 class QAction;
 class QProgressBar;
 class QProgressDialog;
+class QPushButton;
 QT_END_NAMESPACE
 
 namespace GUIUtil {

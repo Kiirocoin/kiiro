@@ -73,8 +73,8 @@ void OptionsModel::Init(bool resetSettings)
         settings.setValue("nDisplayUnit", BitcoinUnits::BTC);
     nDisplayUnit = settings.value("nDisplayUnit").toInt();
 
-    if (!settings.contains("strThirdPartyTxUrls"))
-        settings.setValue("strThirdPartyTxUrls", "");
+    if (!settings.contains("strThirdPartyTxUrls") || settings.value("strThirdPartyTxUrls", "").toString() == "")
+        settings.setValue("strThirdPartyTxUrls", "https://explorer.kiirocoin.org/tx/%s");
     strThirdPartyTxUrls = settings.value("strThirdPartyTxUrls", "").toString();
 
     if (!settings.contains("fCoinControlFeatures"))
