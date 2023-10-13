@@ -979,8 +979,8 @@ QToolTip {
 
 QTreeWidget {
     border: 1px solid;
-    alternate-background-color: #cfcccc;
-    background-color: #ffffff;
+    alternate-background-color: #666666;
+    background-color: #838383;
     border-color: #cfcccc;
     color: #110202;
     font: 12pt 'Source Sans Pro';
@@ -1180,12 +1180,12 @@ QDialog#CoinControlDialog .CoinControlTreeWidget#treeWidget::item {
 
 QDialog#CoinControlDialog .CoinControlTreeWidget#treeWidget::branch:selected,
 QDialog#CoinControlDialog .CoinControlTreeWidget#treeWidget::branch:checked  {
-    color: #cfcccc;
+    color: #FFFFFF;
 }
 
 QDialog#CoinControlDialog .CoinControlTreeWidget#treeWidget::item:selected,
 QDialog#CoinControlDialog .CoinControlTreeWidget#treeWidget::item:checked  {
-    background-color: #878787;
+    background-color: #1F1F1F;
     color: #FFFFFF;
 }
 
