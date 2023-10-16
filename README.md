@@ -8,56 +8,6 @@ Kiirocoin also utilises [Dandelion++](https://arxiv.org/abs/1805.11060) to obscu
 Kiirocoin uses KiiroPoW (a ProgPoW variant) as its Proof-of-Work GPU focused algorithm which is FPGA/ASIC resistant.
 
 
-
-===================
-
-If you are already familiar with Docker, then running Kiirocoin with Docker might be the the easier method for you. To run Kiirocoin using this method, first install [Docker](https://store.docker.com/search?type=edition&offering=community). After this you may
-continue with the following instructions.
-
-Please note that we currently don't support the GUI when running with Docker. Therefore, you can only use RPC (via HTTP or the `kiirocoin-cli` utility) to interact with Kiirocoin via this method.
-
-Pull our latest official Docker image:
-
-```sh
-docker pull kiirocoin/kiirocoind
-```
-
-Start Kiirocoin daemon:
-
-```sh
-docker run -d --name kiirocoind -v "${HOME}/.kiirocoin:/home/kiirocoind/.kiirocoin" kiirocoinorg/kiirocoind
-```
-
-View current block count (this might take a while since the daemon needs to find other nodes and download blocks first):
-
-```sh
-docker exec kiirocoind kiirocoin-cli getblockcount
-```
-
-View connected nodes:
-
-```sh
-docker exec kiirocoind kiirocoin-cli getpeerinfo
-```
-
-Stop daemon:
-
-```sh
-docker stop kiirocoind
-```
-
-Backup wallet:
-
-```sh
-docker cp kiirocoind:/home/kiirocoind/.kiirocoin/wallet.dat .
-```
-
-Start daemon again:
-
-```sh
-docker start kiirocoind
-```
-
 Linux Build Instructions and Notes
 ==================================
 
