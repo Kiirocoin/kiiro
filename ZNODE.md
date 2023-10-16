@@ -1,6 +1,6 @@
 Znode Build Instructions and Notes
 =============================
- - Version 1.0.0.1
+ - Version 1.0.0.3
  - Date: 25 July 2023
  - More detailed guide available here: https://kiirocoin.org/masternode
 
