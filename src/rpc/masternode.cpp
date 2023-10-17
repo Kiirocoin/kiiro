@@ -2,14 +2,14 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "activemasternode.h"
+#include "masternode/activemasternode.h"
 #include "base58.h"
 #include "clientversion.h"
 #include "init.h"
 #include "netbase.h"
 #include "validation.h"
-#include "masternode-payments.h"
-#include "masternode-sync.h"
+#include "masternode/masternode-payments.h"
+#include "masternode/masternode-sync.h"
 #include "rpc/server.h"
 #include "util.h"
 #include "utilmoneystr.h"
@@ -226,7 +226,7 @@ UniValue masternode_outputs(const JSONRPCRequest& request)
     // Find possible candidates
     std::vector<COutput> vPossibleCoins;
     CCoinControl coin_control;
-    coin_control.nCoinType = CoinType::ONLY_1000;
+    coin_control.nCoinType = CoinType::ONLY_COLLATERAL;
     pwallet->AvailableCoins(vPossibleCoins, true, &coin_control);
 
     UniValue obj(UniValue::VOBJ);
@@ -263,9 +263,20 @@ UniValue masternode_status(const JSONRPCRequest& request)
 
     auto dmn = deterministicMNManager->GetListAtChainTip().GetMN(activeMasternodeInfo.proTxHash);
     if (dmn) {
+    	Coin coin;
         mnObj.push_back(Pair("proTxHash", dmn->proTxHash.ToString()));
         mnObj.push_back(Pair("collateralHash", dmn->collateralOutpoint.hash.ToString()));
         mnObj.push_back(Pair("collateralIndex", (int)dmn->collateralOutpoint.n));
+    	if(GetUTXOCoin(dmn->collateralOutpoint, coin)) {
+    		CTxDestination dest;
+			if (ExtractDestination(coin.out.scriptPubKey, dest)) {
+	    		int nHeight = chainActive.Tip() == NULL ? 0 : chainActive.Tip()->nHeight;
+                CMasternodeCollaterals collaterals = Params().GetConsensus().nCollaterals;
+				mnObj.push_back(Pair("collateralAddress", CBitcoinAddress(dest).ToString()));
+				mnObj.push_back(Pair("collateralAmount", coin.out.nValue / COIN));
+				mnObj.push_back(Pair("needToUpgrade", !collaterals.isPayableCollateral(nHeight, coin.out.nValue)));
+			}
+    	}
         UniValue stateObj;
         dmn->pdmnState->ToJson(stateObj);
         mnObj.push_back(Pair("dmnState", stateObj));

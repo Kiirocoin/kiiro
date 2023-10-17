@@ -38,7 +38,7 @@
 #include "util.h"
 
 #include "evo/deterministicmns.h"
-#include "masternode-sync.h"
+#include "masternode/masternode-sync.h"
 #include "masternodelist.h"
 #include "elysium_qtutils.h"
 

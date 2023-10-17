@@ -30,8 +30,8 @@
 #include "utilstrencodings.h"
 #include "validationinterface.h"
 
-#include "masternode-payments.h"
-#include "masternode-sync.h"
+#include "masternode/masternode-payments.h"
+#include "masternode/masternode-sync.h"
 
 #include "evo/deterministicmns.h"
 #include "evo/mnauth.h"

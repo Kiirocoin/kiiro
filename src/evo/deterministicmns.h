@@ -100,6 +100,20 @@ public:
             nPoSeBanHeight = height;
         }
     }
+    int GetBannedHeight() const
+    {
+        return nPoSeBanHeight;
+    }
+    bool IsBanned() const
+    {
+        return nPoSeBanHeight != -1;
+    }
+    void Revive(int nRevivedHeight)
+    {
+        nPoSePenalty = 0;
+        nPoSeBanHeight = -1;
+        nPoSeRevivedHeight = nRevivedHeight;
+    }    
     void UpdateConfirmedHash(const uint256& _proTxHash, const uint256& _confirmedHash)
     {
         confirmedHash = _confirmedHash;
@@ -151,6 +165,7 @@ public:
     DMN_STATE_DIFF_LINE(addr) \
     DMN_STATE_DIFF_LINE(scriptPayout) \
     DMN_STATE_DIFF_LINE(scriptOperatorPayout)
+    
 
 public:
     uint32_t fields{0};
@@ -348,6 +363,16 @@ public:
     }
 
     template <typename Callback>
+    void ForEachMN(bool onlyValid, int height, Callback&& cb) const
+    {
+        for (const auto& p : mnMap) {
+            if (!onlyValid || IsMNValid(p.second, height)) {
+                cb(p.second);
+            }
+        }
+    }
+
+    template <typename Callback>
     void ForEachMN(bool onlyValid, Callback&& cb) const
     {
         for (const auto& p : mnMap) {
@@ -385,6 +410,7 @@ public:
 
     bool IsMNValid(const uint256& proTxHash) const;
     bool IsMNPoSeBanned(const uint256& proTxHash) const;
+    bool IsMNValid(const CDeterministicMNCPtr& dmn, int height) const;
     bool IsMNValid(const CDeterministicMNCPtr& dmn) const;
     bool IsMNPoSeBanned(const CDeterministicMNCPtr& dmn) const;
 
@@ -410,7 +436,6 @@ public:
     CDeterministicMNCPtr GetMNByCollateral(const COutPoint& collateralOutpoint) const;
     CDeterministicMNCPtr GetValidMNByCollateral(const COutPoint& collateralOutpoint) const;
     CDeterministicMNCPtr GetMNByService(const CService& service) const;
-    CDeterministicMNCPtr GetValidMNByService(const CService& service) const;
     CDeterministicMNCPtr GetMNByInternalId(uint64_t internalId) const;
     CDeterministicMNCPtr GetMNPayee() const;
 
@@ -541,6 +566,8 @@ private:
 class CDeterministicMNListDiff
 {
 public:
+    int nHeight{-1}; //memory only
+
     std::vector<CDeterministicMNCPtr> addedMNs;
     // keys are all relating to the internalId of MNs
     std::map<uint64_t, CDeterministicMNStateDiff> updatedMNs;
@@ -592,37 +619,6 @@ public:
     }
 };
 
-// TODO can be removed in a future version
-class CDeterministicMNListDiff_OldFormat
-{
-public:
-    uint256 prevBlockHash;
-    uint256 blockHash;
-    int nHeight{-1};
-    std::map<uint256, CDeterministicMNCPtr> addedMNs;
-    std::map<uint256, CDeterministicMNStateCPtr> updatedMNs;
-    std::set<uint256> removedMns;
-
-public:
-    template<typename Stream>
-    void Unserialize(Stream& s) {
-        addedMNs.clear();
-        s >> prevBlockHash;
-        s >> blockHash;
-        s >> nHeight;
-        size_t cnt = ReadCompactSize(s);
-        for (size_t i = 0; i < cnt; i++) {
-            uint256 proTxHash;
-            auto dmn = std::make_shared<CDeterministicMN>();
-            s >> proTxHash;
-            dmn->Unserialize(s, true);
-            addedMNs.emplace(proTxHash, dmn);
-        }
-        s >> updatedMNs;
-        s >> removedMns;
-    }
-};
-
 class CDeterministicMNManager
 {
     static const int SNAPSHOT_LIST_PERIOD = 576; // once per day
@@ -657,12 +653,6 @@ public:
     bool IsProTxWithCollateral(const CTransactionRef& tx, uint32_t n);
 
     bool IsDIP3Enforced(int nHeight = -1);
-
-public:
-    // TODO these can all be removed in a future version
-    bool UpgradeDiff(CDBBatch& batch, const CBlockIndex* pindexNext, const CDeterministicMNList& curMNList, CDeterministicMNList& newMNList);
-    void UpgradeDBIfNeeded();
-    static bool IsDIP3Active(int height);
 
 private:
     void CleanupCache(int nHeight);

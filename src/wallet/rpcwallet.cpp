@@ -27,7 +27,7 @@
 #include "walletdb.h"
 #include "hdmint/tracker.h"
 #include "walletexcept.h"
-#include "masternode-payments.h"
+#include "masternode/masternode-payments.h"
 #include "lelantusjoinsplitbuilder.h"
 #include "bip47/paymentchannel.h"
 #include "bip47/account.h"

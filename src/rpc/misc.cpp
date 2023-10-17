@@ -21,7 +21,7 @@
 #endif
 #include "txdb.h"
 
-#include "masternode-sync.h"
+#include "masternode/masternode-sync.h"
 
 #include <stdint.h>
 

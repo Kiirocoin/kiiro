@@ -12,7 +12,7 @@
 
 #include "evo/specialtx.h"
 
-#include "activemasternode.h"
+#include "masternode/activemasternode.h"
 #include "chainparams.h"
 #include "init.h"
 #include "net.h"

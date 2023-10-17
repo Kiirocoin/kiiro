@@ -374,6 +374,7 @@ bool AcceptToMemoryPool(CTxPoolAggregate& poolAggregate, CValidationState &state
                         bool* pfMissingInputs, std::list<CTransactionRef>* plTxnReplaced = NULL,
                         bool fOverrideMempoolLimit=false, const CAmount nAbsurdFee=0, bool isCheckWalletTransaction=false, bool markKiirocoinSpendTransactionSerial=true);
 
+bool GetUTXOCoin(const COutPoint& outpoint, Coin& coin, int height);
 bool GetUTXOCoin(const COutPoint& outpoint, Coin& coin);
 int GetUTXOHeight(const COutPoint& outpoint);
 int GetUTXOConfirmations(const COutPoint& outpoint);

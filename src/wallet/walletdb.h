@@ -32,7 +32,7 @@
 
 static const bool DEFAULT_FLUSHWALLET = true;
 static const uint32_t ORIGINAL_KEYPATH_SIZE = 0x4; // m/0'/0'/<n> is the original keypath
-static const uint32_t BIP44_KEYPATH_SIZE = 0x6;    // m/44'/<1/136>'/0'/<c>/<n> is the BIP44 keypath
+static const uint32_t BIP44_KEYPATH_SIZE = 0x6;    // m/44'/<1/19273>'/0'/<c>/<n> is the BIP44 keypath
 
 class CAccount;
 class CAccountingEntry;

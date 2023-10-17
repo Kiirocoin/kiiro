@@ -196,6 +196,18 @@ public:
         consensus.stage3DevelopmentFundAddress = "KWTco92wURX5Jwu3mMdWrs36j574meAvew";
         consensus.stage3CommunityFundAddress = "KDW8CeScVpWFzekvZm4f37qs5GxByEGSKE";
 
+        std::vector<FundRewardStructure> rewardStructures = { {INT_MAX, 10}  }; // 10% dev/community fee forever
+        consensus.nDevelopmentFundPayment = FundPayment(rewardStructures, 30, "KWTco92wURX5Jwu3mMdWrs36j574meAvew");
+        consensus.nCommunityFundPayment = FundPayment(rewardStructures, 30,"KDW8CeScVpWFzekvZm4f37qs5GxByEGSKE");
+        consensus.nCollaterals = CMasternodeCollaterals(
+          { {65000, 1000 * COIN}, // Block 0 - 64999 Collateral 1000
+            {115000, 2500 * COIN}, // Block 65000 - 114999 Collateral 2500
+            {165000, 3000 * COIN}, // Block 115000 - 164999 Collateral 3000
+            {INT_MAX, 4000 * COIN} // Block 170000 - Infinity Collateral 4000
+          },
+          { {INT_MAX, 60} }
+        );        
+
         consensus.nStartBlacklist = 29399;
         consensus.nStartDuplicationCheck = 29352;
 
@@ -483,7 +495,7 @@ public:
 
         consensus.chainType = Consensus::chainTestnet;
 
-        consensus.nSubsidyHalvingFirst = 12000;
+        consensus.nSubsidyHalvingFirst = 10;
         consensus.nSubsidyHalvingSecond = 150000;
         consensus.nSubsidyHalvingInterval = 150000;
         consensus.nSubsidyHalvingStopBlock = 1000000;
@@ -493,12 +505,24 @@ public:
         consensus.stage2DevelopmentFundAddress = "TUuKypsbbnHHmZ2auC2BBWfaP1oTEnxjK2";
 
         consensus.stage3StartTime = 1653409800;  // May 24th 2022 04:30 UTC
-        consensus.stage3StartBlock = 84459;
+        consensus.stage3StartBlock = 0;
         consensus.stage3DevelopmentFundShare = 15;
         consensus.stage3CommunityFundShare = 10;
         consensus.stage3MasternodeShare = 50;
         consensus.stage3DevelopmentFundAddress = "TWDxLLKsFp6qcV1LL4U2uNmW4HwMcapmMU";
         consensus.stage3CommunityFundAddress = "TCkC4uoErEyCB4MK3d6ouyJELoXnuyqe9L";
+
+        std::vector<FundRewardStructure> rewardStructures = { {INT_MAX, 10}  }; // 10% dev/community fee forever
+        consensus.nDevelopmentFundPayment = FundPayment(rewardStructures, 1, "TWDxLLKsFp6qcV1LL4U2uNmW4HwMcapmMU");
+        consensus.nCommunityFundPayment = FundPayment(rewardStructures, 1,"TCkC4uoErEyCB4MK3d6ouyJELoXnuyqe9L");
+        consensus.nCollaterals = CMasternodeCollaterals(
+          { {250, 50 * COIN},
+            {450, 150 * COIN},
+            {650, 250 * COIN},
+            {INT_MAX, 400 * COIN}
+          },
+          { {250, 60}, {INT_MAX, 62} }
+        );        
 
         consensus.nStartBlacklist = 0;
         consensus.nStartDuplicationCheck = 0;
@@ -568,11 +592,11 @@ public:
         nMaxTipAge = 0x7fffffff; // allow mining on top of old blocks for testnet
 
         // evo znodes
-        consensus.DIP0003Height = 3340;
-        consensus.DIP0003EnforcementHeight = 3800;
+        consensus.DIP0003Height = 100;
+        consensus.DIP0003EnforcementHeight = 101;
         consensus.DIP0003EnforcementHash.SetNull();
 
-        consensus.DIP0008Height = 25000;
+        consensus.DIP0008Height = 103;
         consensus.nEvoZnodeMinimumConfirmations = 0;
 
         // long living quorum params
@@ -764,6 +788,16 @@ public:
         consensus.stage3MasternodeShare = 50;
         consensus.stage3DevelopmentFundAddress = "TepVKkmUo1N6sazuM2wWwV7aiG4m1BUShU";
         consensus.stage3CommunityFundAddress = "TZpbhfvQE61USHsxd55XdPpWBqu3SXB1EP";
+
+        std::vector<FundRewardStructure> rewardStructures = { {INT_MAX, 10}  }; // 10% dev/community fee forever
+        consensus.nDevelopmentFundPayment = FundPayment(rewardStructures, 30, "TepVKkmUo1N6sazuM2wWwV7aiG4m1BUShU");
+        consensus.nCommunityFundPayment = FundPayment(rewardStructures, 30,"TZpbhfvQE61USHsxd55XdPpWBqu3SXB1EP");
+        consensus.nCollaterals = CMasternodeCollaterals(
+          { {200, 1000 * COIN},
+            {INT_MAX, 5000 * COIN}
+          },
+          { {200, 60}, {INT_MAX, 62} }
+        );
 
         consensus.nStartBlacklist = 0;
         consensus.nStartDuplicationCheck = 0;
@@ -993,6 +1027,16 @@ public:
         consensus.stage3MasternodeShare = 50;
         consensus.stage3DevelopmentFundAddress = "TGEGf26GwyUBE2P2o2beBAfE9Y438dCp5t";  // private key cMrz8Df36VR9TvZjtvSqLPhUQR7pcpkXRXaLNYUxfkKsRuCzHpAN
         consensus.stage3CommunityFundAddress = "TJmPzeJF4DECrBwUftc265U7rTPxKmpa4F";  // private key cTyPWqTMM1CgT5qy3K3LSgC1H6Q2RHvnXZHvjWtKB4vq9qXqKmMu
+
+        std::vector<FundRewardStructure> rewardStructures = { {INT_MAX, 10}  }; // 10% dev/community fee forever
+        consensus.nDevelopmentFundPayment = FundPayment(rewardStructures, 1, "TGEGf26GwyUBE2P2o2beBAfE9Y438dCp5t");
+        consensus.nCommunityFundPayment = FundPayment(rewardStructures, 1,"TJmPzeJF4DECrBwUftc265U7rTPxKmpa4F");
+        consensus.nCollaterals = CMasternodeCollaterals(
+          { {200, 1000 * COIN},
+            {INT_MAX, 5000 * COIN}
+          },
+          { {200, 60}, {INT_MAX, 62} }
+        );  
 
         consensus.nMajorityEnforceBlockUpgrade = 750;
         consensus.nMajorityRejectBlockOutdated = 950;

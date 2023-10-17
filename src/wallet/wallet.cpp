@@ -36,7 +36,7 @@
 #include "ui_interface.h"
 #include "utilmoneystr.h"
 #include "validation.h"
-#include "masternode-sync.h"
+#include "masternode/masternode-sync.h"
 #include "random.h"
 #include "init.h"
 #include "hdmint/wallet.h"
@@ -48,6 +48,7 @@
 #include "hdmint/tracker.h"
 
 #include "evo/deterministicmns.h"
+#include "masternode/masternode-collaterals.h"
 
 #include <assert.h>
 #include <boost/algorithm/string.hpp>
@@ -171,10 +172,10 @@ CPubKey CWallet::GetKeyFromKeypath(uint32_t nChange, uint32_t nChild, CKey& secr
     CKey key;                      //master key seed (256bit)
     CExtKey masterKey;             //hd master key
     CExtKey purposeKey;            //key at m/44'
-    CExtKey coinTypeKey;           //key at m/44'/<1/136>' (Testnet or Kiirocoin Coin Type respectively, according to SLIP-0044)
-    CExtKey accountKey;            //key at m/44'/<1/136>'/0'
-    CExtKey externalChainChildKey; //key at m/44'/<1/136>'/0'/<c> (Standard: 0/1, Mints: 2)
-    CExtKey childKey;              //key at m/44'/<1/136>'/0'/<c>/<n>
+    CExtKey coinTypeKey;           //key at m/44'/<1/19273>' (Testnet or Kiirocoin Coin Type respectively, according to SLIP-0044)
+    CExtKey accountKey;            //key at m/44'/<1/19273>'/0'
+    CExtKey externalChainChildKey; //key at m/44'/<1/19273>'/0'/<c> (Standard: 0/1, Mints: 2)
+    CExtKey childKey;              //key at m/44'/<1/19273>'/0'/<c>/<n>
 
     if(hdChain.nVersion >= CHDChain::VERSION_WITH_BIP39){
         MnemonicContainer mContainer = mnemonicContainer;
@@ -192,16 +193,16 @@ CPubKey CWallet::GetKeyFromKeypath(uint32_t nChange, uint32_t nChild, CKey& secr
     // use hardened derivation (child keys >= 0x80000000 are hardened after bip32)
     masterKey.Derive(purposeKey, BIP44_INDEX | BIP32_HARDENED_KEY_LIMIT);
 
-    // derive m/44'/136'
+    // derive m/44'/19273'
     purposeKey.Derive(coinTypeKey, nIndex | BIP32_HARDENED_KEY_LIMIT);
 
-    // derive m/44'/136'/0'
+    // derive m/44'/19273'/0'
     coinTypeKey.Derive(accountKey, BIP32_HARDENED_KEY_LIMIT);
 
-    // derive m/44'/136'/0'/<c>
+    // derive m/44'/19273'/0'/<c>
     accountKey.Derive(externalChainChildKey, nChange);
 
-    // derive m/44'/136'/0'/<c>/<n>
+    // derive m/44'/19273'/0'/<c>/<n>
     externalChainChildKey.Derive(childKey, nChild);
 
     secret = childKey.key;
@@ -233,10 +234,10 @@ CPubKey CWallet::GenerateNewKey(uint32_t nChange, bool fWriteChain)
         CKey key;                      //master key seed (256bit)
         CExtKey masterKey;             //hd master key
         CExtKey purposeKey;            //key at m/44'
-        CExtKey coinTypeKey;           //key at m/44'/<1/136>' (Testnet or Kiirocoin Coin Type respectively, according to SLIP-0044)
-        CExtKey accountKey;            //key at m/44'/<1/136>'/0'
-        CExtKey externalChainChildKey; //key at m/44'/<1/136>'/0'/<c> (Standard: 0/1, Mints: 2)
-        CExtKey childKey;              //key at m/44'/<1/136>'/0'/<c>/<n>
+        CExtKey coinTypeKey;           //key at m/44'/<1/19273>' (Testnet or Kiirocoin Coin Type respectively, according to SLIP-0044)
+        CExtKey accountKey;            //key at m/44'/<1/19273>'/0'
+        CExtKey externalChainChildKey; //key at m/44'/<1/19273>'/0'/<c> (Standard: 0/1, Mints: 2)
+        CExtKey childKey;              //key at m/44'/<1/19273>'/0'/<c>/<n>
         //For bip39 we use it's original way for generating keys to make it compatible with hardware and software wallets
         if(hdChain.nVersion >= CHDChain::VERSION_WITH_BIP39){
             MnemonicContainer mContainer = mnemonicContainer;
@@ -254,13 +255,13 @@ CPubKey CWallet::GenerateNewKey(uint32_t nChange, bool fWriteChain)
         // use hardened derivation (child keys >= 0x80000000 are hardened after bip32)
         masterKey.Derive(purposeKey, BIP44_INDEX | BIP32_HARDENED_KEY_LIMIT);
 
-        // derive m/44'/136'
+        // derive m/44'/19273'
         purposeKey.Derive(coinTypeKey, nIndex | BIP32_HARDENED_KEY_LIMIT);
 
-        // derive m/44'/136'/0'
+        // derive m/44'/19273'/0'
         coinTypeKey.Derive(accountKey, BIP32_HARDENED_KEY_LIMIT);
 
-        // derive m/44'/136'/0'/<c>
+        // derive m/44'/19273'/0'/<c>
         accountKey.Derive(externalChainChildKey, nChange);
 
         // derive child key at next index, skip keys already known to the wallet
@@ -3414,9 +3415,9 @@ CAmount CWallet::GetImmatureWatchOnlyBalance() const
 
 void CWallet::AvailableCoins(std::vector <COutput> &vCoins, bool fOnlyConfirmed, const CCoinControl *coinControl, bool fIncludeZeroValue, bool fUseInstantSend) const
 {
-    static const int ZNODE_COIN_REQUIRED  = 1000;
     vCoins.clear();
     CoinType nCoinType = coinControl ? coinControl->nCoinType : CoinType::ALL_COINS;
+    CMasternodeCollaterals collaterals = Params().GetConsensus().nCollaterals;
 
     {
         LOCK2(cs_main, cs_wallet);
@@ -3488,12 +3489,12 @@ void CWallet::AvailableCoins(std::vector <COutput> &vCoins, bool fOnlyConfirmed,
                             || pcoin->tx->vout[i].scriptPubKey.IsZerocoinRemint()
                             || pcoin->tx->vout[i].scriptPubKey.IsLelantusMint()
                             || pcoin->tx->vout[i].scriptPubKey.IsLelantusJMint());
-                } else if (nCoinType == CoinType::ONLY_NOT1000IFMN) {
-                    found = !(fMasternodeMode && pcoin->tx->vout[i].nValue == ZNODE_COIN_REQUIRED * COIN);
-                } else if (nCoinType == CoinType::ONLY_NONDENOMINATED_NOT1000IFMN) {
-                    if (fMasternodeMode) found = pcoin->tx->vout[i].nValue != ZNODE_COIN_REQUIRED * COIN; // do not use Hot MN funds
-		} else if (nCoinType == CoinType::ONLY_1000) {
-                    found = pcoin->tx->vout[i].nValue == ZNODE_COIN_REQUIRED * COIN;
+                } else if (nCoinType == CoinType::ONLY_NOTCOLLATERALIFMN) {
+                    found = !(fMasternodeMode && collaterals.isValidCollateral(pcoin->tx->vout[i].nValue));
+                } else if (nCoinType == CoinType::ONLY_NONDENOMINATED_NOTCOLATERALRIFMN) {
+                    if (fMasternodeMode) found = !collaterals.isValidCollateral(pcoin->tx->vout[i].nValue); // do not use Hot MN funds
+		        } else if (nCoinType == CoinType::ONLY_COLLATERAL) {
+                    found = collaterals.isValidCollateral(pcoin->tx->vout[i].nValue);
                 } else {
                     found = true;
                 }
@@ -3503,7 +3504,7 @@ void CWallet::AvailableCoins(std::vector <COutput> &vCoins, bool fOnlyConfirmed,
 
 
                 if (!(IsSpent(wtxid, i)) && mine != ISMINE_NO &&
-                    (!IsLockedCoin((*it).first, i) || nCoinType == CoinType::ONLY_1000) &&
+                    (!IsLockedCoin((*it).first, i) || nCoinType == CoinType::ONLY_COLLATERAL) &&
                     (pcoin->tx->vout[i].nValue > 0 || fIncludeZeroValue || (pcoin->tx->vout[i].scriptPubKey.IsLelantusJMint() && GetCredit(pcoin->tx->vout[i], ISMINE_SPENDABLE) > 0)) &&
                     (!coinControl || !coinControl->HasSelected() || coinControl->fAllowOtherInputs || coinControl->IsSelected(COutPoint((*it).first, i)))) {
                         vCoins.push_back(COutput(pcoin, i, nDepth,
@@ -3557,7 +3558,7 @@ bool CWallet::GetZnodeVinAndKeys(CTxIn &txinRet, CPubKey &pubKeyRet, CKey &keyRe
     // Find possible candidates
     std::vector <COutput> vPossibleCoins;
     CCoinControl coinControl;
-    coinControl.nCoinType = CoinType::ONLY_1000;
+    coinControl.nCoinType = CoinType::ONLY_COLLATERAL;
     AvailableCoins(vPossibleCoins, true, &coinControl, false);
     if (vPossibleCoins.empty()) {
         LogPrintf("CWallet::GetZnodeVinAndKeys -- Could not locate any valid znode vin\n");
