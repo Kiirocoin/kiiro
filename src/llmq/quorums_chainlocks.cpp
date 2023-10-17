@@ -10,7 +10,7 @@
 #include "evo/spork.h"
 
 #include "chain.h"
-#include "masternode-sync.h"
+#include "masternode/masternode-sync.h"
 #include "net_processing.h"
 #include "scheduler.h"
 #include "txmempool.h"

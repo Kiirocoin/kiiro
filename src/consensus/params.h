@@ -10,6 +10,8 @@
 #include <map>
 #include <string>
 #include <set>
+#include "fund_payment.h"
+#include "masternode/masternode-collaterals.h"
 #include <unordered_set>
 #include <secp256k1/include/GroupElement.h>
 
@@ -162,6 +164,10 @@ struct Params {
     int stage3CommunityFundShare;
     /** percentage of block subsidy going to masternode */
     int stage3MasternodeShare;
+
+    FundPayment nDevelopmentFundPayment;
+    FundPayment nCommunityFundPayment;
+    CMasternodeCollaterals nCollaterals;
 
     int nStartDuplicationCheck;
     int nStartBlacklist;

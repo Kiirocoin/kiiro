@@ -40,8 +40,8 @@ void MakeSingleColorImage(QImage& img, const QColor& colorbase)
         for (int y = img.height(); y--; )
         {
             const QRgb rgb = img.pixel(x, y);
-            // set default to kiirocoin red
-            img.setPixel(x, y, qRgba(155, 28, 46, qAlpha(rgb)));
+            // set default to kiirocoin gold
+            img.setPixel(x, y, qRgba(193, 134, 50, qAlpha(rgb)));
         }
     }
 }
@@ -161,6 +161,16 @@ QIcon PlatformStyle::TextColorIcon(const QString& filename) const
 QIcon PlatformStyle::TextColorIcon(const QIcon& icon) const
 {
     return ColorizeIcon(icon, TextColor());
+}
+
+QColor PlatformStyle::SingleColor() const
+{
+    return COLOR_KIIRO_FCB040;
+}
+
+QColor PlatformStyle::TextColor() const
+{
+    return COLOR_WHITE;
 }
 
 const PlatformStyle *PlatformStyle::instantiate(const QString &platformId)

@@ -26,8 +26,8 @@
 #include "utilstrencodings.h"
 #include "validationinterface.h"
 
-#include "masternode-payments.h"
-#include "masternode-sync.h"
+#include "masternode/masternode-payments.h"
+#include "masternode/masternode-sync.h"
 
 #include <utility>      // std::pair
 #include <memory>

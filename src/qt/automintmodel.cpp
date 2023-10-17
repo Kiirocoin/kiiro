@@ -1,5 +1,5 @@
 #include "../lelantus.h"
-#include "../masternode-sync.h"
+#include "masternode/masternode-sync.h"
 #include "../validation.h"
 #include "../wallet/wallet.h"
 
@@ -67,7 +67,7 @@ void IncomingFundNotifier::check()
     {
         LOCK2(cs_main, wallet->cs_wallet);
         CCoinControl coinControl;
-        coinControl.nCoinType = CoinType::ONLY_NOT1000IFMN;
+        coinControl.nCoinType = CoinType::ONLY_NOTCOLLATERALIFMN;
         while (!txs.empty()) {
             auto const &tx = txs.back();
             txs.pop_back();

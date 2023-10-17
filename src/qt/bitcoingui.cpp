@@ -38,7 +38,7 @@
 #include "util.h"
 
 #include "evo/deterministicmns.h"
-#include "masternode-sync.h"
+#include "masternode/masternode-sync.h"
 #include "masternodelist.h"
 #include "elysium_qtutils.h"
 
@@ -48,6 +48,9 @@
 
 #include <iostream>
 
+#include <QDebug>
+#include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkReply>
 #include <QAction>
 #include <QApplication>
 #include <QDateTime>
@@ -59,6 +62,7 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QMimeData>
+#include <QPushButton>
 #include <QProgressDialog>
 #include <QScreen>
 #include <QSettings>
@@ -66,6 +70,7 @@
 #include <QStackedWidget>
 #include <QStatusBar>
 #include <QStyle>
+#include <QSslSocket>
 #include <QTimer>
 #include <QToolBar>
 #include <QVBoxLayout>
@@ -74,7 +79,9 @@
 #include <QTextDocument>
 #include <QUrl>
 #else
+#include <univalue/include/univalue.h>
 #include <QUrlQuery>
+#include <QDesktopServices>
 #endif
 
 const std::string BitcoinGUI::DEFAULT_UIPLATFORM =
@@ -135,6 +142,8 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     lelantusAction(0),
     masternodeAction(0),
     createPcodeAction(0),
+    buttonVersionUpdate(0),
+    networkVersionManager(0),
     logoAction(0),
     trayIcon(0),
     trayIconMenu(0),
@@ -197,6 +206,10 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
         setCentralWidget(rpcConsole);
     }
 
+    /** KIIRO START */
+    networkVersionManager = new QNetworkAccessManager(this);
+    /** KIIRO END */
+    
     // Accept D&D of URIs
     setAcceptDrops(true);
 
@@ -261,6 +274,23 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     labelElysiumPendingIcon->hide();
     labelElysiumPendingText->hide();
 
+    QFrame *frameVersionUpdate = new QFrame();
+    frameVersionUpdate->setContentsMargins(0,0,0,0);
+    frameVersionUpdate->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
+    frameVersionUpdate->setStyleSheet("{border:none;}");
+    QHBoxLayout *frameVersionUpdateLayout = new QHBoxLayout(frameVersionUpdate);
+    frameVersionUpdateLayout->setContentsMargins(3,0,3,0);
+    frameVersionUpdateLayout->setSpacing(3);
+    frameVersionUpdateLayout->addStretch();
+
+    // Create the button, make "this" the parent
+    buttonVersionUpdate = new QPushButton("New Wallet Version", this);
+    buttonVersionUpdate->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    buttonVersionUpdate->setObjectName("buttonVersionUpdate");
+    frameVersionUpdateLayout->addWidget(buttonVersionUpdate);
+    frameVersionUpdateLayout->addStretch();
+    buttonVersionUpdate->hide();
+
     // Progress bar and label for blocks download
     progressBarLabel = new QLabel();
     progressBarLabel->setVisible(false);
@@ -281,6 +311,7 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     statusBar()->addWidget(progressBar);
     statusBar()->addPermanentWidget(frameBlocks);
     statusBar()->addWidget(framePending);
+    statusBar()->addWidget(frameVersionUpdate);
 
     // Install event filter to be able to catch status tip events (QEvent::StatusTip)
     this->installEventFilter(this);
@@ -290,6 +321,9 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
 
     // Subscribe to notifications from core
     subscribeToCoreSignals();
+
+    // Connect button signal to appropriate slot
+    connect(buttonVersionUpdate, &QPushButton::released, this, &BitcoinGUI::versionUpdateClicked);
 
     connect(connectionsControl, &GUIUtil::ClickableLabel::clicked, this, &BitcoinGUI::toggleNetworkActive);
 
@@ -301,6 +335,9 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
         connect(progressBar, &GUIUtil::ClickableProgressBar::clicked, this, &BitcoinGUI::showModalOverlay);
     }
 #endif
+
+    getLatestVersion();
+
 }
 
 BitcoinGUI::~BitcoinGUI()
@@ -591,6 +628,7 @@ void BitcoinGUI::createToolBars()
         toolbar->addWidget(logoLabel);
 
         overviewAction->setChecked(true);
+        connect(networkVersionManager, &QNetworkAccessManager::finished, this, &BitcoinGUI::getLatestVersionReplyFinished);
     }
 }
 
@@ -952,7 +990,8 @@ void BitcoinGUI::updateNetworkState()
     tooltip = QString("<nobr>") + tooltip + QString("</nobr>");
     connectionsControl->setToolTip(tooltip);
 
-    connectionsControl->setPixmap(QIcon(icon).pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+    connectionsControl->setPixmap(platformStyle->SingleColorIcon(icon).pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+
 }
 
 void BitcoinGUI::setNumConnections(int count)
@@ -1053,7 +1092,7 @@ void BitcoinGUI::setNumBlocks(int count, const QDateTime& blockDate, double nVer
         tooltip = tr("Catching up...") + QString("<br>") + tooltip;
         if(count != prevBlocks)
         {
-            labelBlocksIcon->setPixmap(QIcon(QString(
+            labelBlocksIcon->setPixmap(platformStyle->SingleColorIcon(QString(
                 ":/movies/spinner-%1").arg(spinnerFrame, 3, 10, QChar('0')))
                 .pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE));
             spinnerFrame = (spinnerFrame + 1) % SPINNER_FRAMES;
@@ -1117,10 +1156,11 @@ void BitcoinGUI::setAdditionalDataSyncProgress(double nSyncProgress)
     if(masternodeSync.IsSynced()) {
         progressBarLabel->setVisible(false);
         progressBar->setVisible(false);
-        labelBlocksIcon->setPixmap(QIcon(":/icons/synced").pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE));
+        labelBlocksIcon->setPixmap(platformStyle->SingleColorIcon(":/icons/synced").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+
     } else {
 
-        labelBlocksIcon->setPixmap(QIcon(QString(
+        labelBlocksIcon->setPixmap(platformStyle->SingleColorIcon(QString(
                         ":/movies/spinner-%1").arg(spinnerFrame, 3, 10, QChar('0')))
                                             .pixmap(STATUSBAR_ICONSIZE, STATUSBAR_ICONSIZE));
         spinnerFrame = (spinnerFrame + 1) % SPINNER_FRAMES;
@@ -1320,14 +1360,15 @@ void BitcoinGUI::setElysiumPendingStatus(bool pending)
     } else {
         labelElysiumPendingIcon->show();
         labelElysiumPendingText->show();
-        labelElysiumPendingIcon->setPixmap(QIcon(":/icons/elysium_hourglass").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+        labelElysiumPendingIcon->setPixmap(platformStyle->SingleColorIcon(":/icons/elysium_hourglass").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+
         labelElysiumPendingIcon->setToolTip(tr("You have Elysium transactions awaiting confirmation."));
     }
 }
 
 void BitcoinGUI::setHDStatus(int hdEnabled)
 {
-    labelWalletHDStatusIcon->setPixmap(QIcon(hdEnabled ? ":/icons/hd_enabled" : ":/icons/hd_disabled").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+    labelWalletHDStatusIcon->setPixmap(platformStyle->SingleColorIcon(hdEnabled ? ":/icons/hd_enabled" : ":/icons/hd_disabled").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
     labelWalletHDStatusIcon->setToolTip(hdEnabled ? tr("HD key generation is <b>enabled</b>") : tr("HD key generation is <b>disabled</b>"));
 
     // eventually disable the QLabel to set its opacity to 50%
@@ -1346,7 +1387,7 @@ void BitcoinGUI::setEncryptionStatus(int status)
         break;
     case WalletModel::Unlocked:
         labelWalletEncryptionIcon->show();
-        labelWalletEncryptionIcon->setPixmap(QIcon(":/icons/lock_open").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+        labelWalletEncryptionIcon->setPixmap(platformStyle->SingleColorIcon(":/icons/lock_open").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
         labelWalletEncryptionIcon->setToolTip(tr("Wallet is <b>encrypted</b> and currently <b>unlocked</b>"));
         encryptWalletAction->setChecked(true);
         changePassphraseAction->setEnabled(true);
@@ -1354,7 +1395,7 @@ void BitcoinGUI::setEncryptionStatus(int status)
         break;
     case WalletModel::Locked:
         labelWalletEncryptionIcon->show();
-        labelWalletEncryptionIcon->setPixmap(QIcon(":/icons/lock_closed").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
+        labelWalletEncryptionIcon->setPixmap(platformStyle->SingleColorIcon(":/icons/lock_closed").pixmap(STATUSBAR_ICONSIZE,STATUSBAR_ICONSIZE));
         labelWalletEncryptionIcon->setToolTip(tr("Wallet is <b>encrypted</b> and currently <b>locked</b>"));
         encryptWalletAction->setChecked(true);
         changePassphraseAction->setEnabled(true);
@@ -1593,4 +1634,105 @@ void UnitDisplayStatusBarControl::onMenuSelection(QAction* action)
     {
         optionsModel->setDisplayUnit(action->data());
     }
+}
+
+void BitcoinGUI::getLatestVersionReplyFinished(QNetworkReply *reply) {
+    
+    if(reply->error() != QNetworkReply::NoError) {
+        LogPrintf("Error with Github version: %s\n", reply->errorString().toStdString());
+        return;
+    }
+
+    QByteArray answer = reply->readAll();
+
+    UniValue releases(UniValue::VARR);
+    releases.read(answer.data());
+
+    if (!releases.isArray()) {
+        return;
+    }
+
+    if (!releases.size()) {
+        return;
+    }        
+
+    auto latestRelease = releases[0];
+    auto keys = latestRelease.getKeys();
+    bool fNewSoftwareFound = false;
+    for (auto key : keys) {
+        if (key == "tag_name" && !fNewSoftwareFound) {
+            auto latestVersion = latestRelease["tag_name"].get_str();
+            QRegExp rx("v(\\d+).(\\d+).(\\d+).(\\d+)");
+            rx.indexIn(QString::fromStdString(latestVersion));
+
+            if (rx.capturedTexts().size() < 5)
+                return;
+
+            // List the found values
+            static const int CLIENT_VERSION_MAJOR_VALUE = rx.capturedTexts()[1].toInt();
+            static const int CLIENT_VERSION_MINOR_VALUE = rx.capturedTexts()[2].toInt();
+            static const int CLIENT_VERSION_REVISION_VALUE = rx.capturedTexts()[3].toInt();
+            static const int CLIENT_VERSION_BUILD_VALUE = rx.capturedTexts()[4].toInt();
+            bool fStopSearch = false;
+            if (CLIENT_VERSION_MAJOR < CLIENT_VERSION_MAJOR_VALUE) {
+                fNewSoftwareFound = true;
+            } else {
+                if (CLIENT_VERSION_MAJOR > CLIENT_VERSION_MAJOR_VALUE) {
+                    fStopSearch = true;
+                }
+            }
+
+            if (!fStopSearch) {
+                if (CLIENT_VERSION_MINOR < CLIENT_VERSION_MINOR_VALUE) {
+                    fNewSoftwareFound = true;
+                } else {
+                    if (CLIENT_VERSION_MINOR > CLIENT_VERSION_MINOR_VALUE) {
+                        fStopSearch = true;
+                    }
+                }
+            }
+
+            if (!fStopSearch) {
+                if (CLIENT_VERSION_REVISION < CLIENT_VERSION_REVISION_VALUE) {
+                    fNewSoftwareFound = true;
+                }
+            }
+
+            if (!fStopSearch) {
+                if (CLIENT_VERSION_BUILD < CLIENT_VERSION_BUILD_VALUE) {
+                    fNewSoftwareFound = true;
+                }
+            }
+
+            if (fNewSoftwareFound) {
+                buttonVersionUpdate->setToolTip(QString::fromStdString(strprintf("Currently running: %s\nLatest version: %s", FormatFullVersion(),
+                                                                                latestVersion)));
+
+                // Only display the message on startup to the user around 1/3 of the time
+                if (GetRandInt(3) == 1) {
+                    bool fRet = uiInterface.ThreadSafeQuestion(
+                            strprintf("\nCurrently running: %s\nLatest version: %s", FormatFullVersion(),
+                                        latestVersion) + "\n\nWould you like to visit the releases page?",
+                            "",
+                            "New Wallet Version Found",
+                            CClientUIInterface::MSG_VERSION | CClientUIInterface::BTN_NO);
+                    if (fRet) {
+                        QString link = "https://github.com/kiirocoin/kiiro/releases";
+                        QDesktopServices::openUrl(QUrl(link));
+                    }
+                }
+                buttonVersionUpdate->show();
+            }
+        }
+    }
+}
+
+void BitcoinGUI::versionUpdateClicked()
+{
+    QDesktopServices::openUrl(QUrl("https://github.com/kiirocoin/kiiro/releases", QUrl::TolerantMode));
+}
+
+void BitcoinGUI::getLatestVersion()
+{
+    networkVersionManager->get(QNetworkRequest(QUrl("https://api.github.com/repos/kiirocoin/kiiro/releases")));
 }
