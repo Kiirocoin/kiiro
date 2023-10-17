@@ -72,7 +72,7 @@ int ClientModel::getNumConnections(unsigned int flags) const
 
 void ClientModel::setMasternodeList(const CDeterministicMNList& mnList)
 {
-    LOCK(cs_mnlinst);
+    LOCK(cs_mnlist);
     if (mnListCached.GetBlockHash() == mnList.GetBlockHash()) {
         return;
     }
@@ -82,13 +82,13 @@ void ClientModel::setMasternodeList(const CDeterministicMNList& mnList)
 
 CDeterministicMNList ClientModel::getMasternodeList() const
 {
-    LOCK(cs_mnlinst);
+    LOCK(cs_mnlist);
     return mnListCached;
 }
 
 void ClientModel::refreshMasternodeList()
 {
-    LOCK(cs_mnlinst);
+    LOCK(cs_mnlist);
     setMasternodeList(deterministicMNManager->GetListAtChainTip());
 }
 

@@ -106,7 +106,7 @@ endif
 .PHONY: FORCE check-symbols check-security
 # bitcoin core #
 BITCOIN_CORE_H = \
-  activemasternode.h \
+  masternode/activemasternode.h \
   addressindex.h \
   spentindex.h \
   addrdb.h \
@@ -153,7 +153,7 @@ BITCOIN_CORE_H = \
   dbwrapper.h \
   limitedmap.h \
   threadinterrupt.h \
-  masternode-utils.h \
+  masternode/masternode-utils.h \
   mbstring.h \
   memusage.h \
   merkleblock.h \
@@ -245,8 +245,9 @@ BITCOIN_CORE_H = \
   addresstype.h \
   mtpstate.h \
   messagesigner.h \
-  masternode-payments.h \
-  masternode-sync.h \
+  masternode/masternode-payments.h \
+  masternode/masternode-sync.h \
+  masternode/masternode-collaterals.h \
   saltedhasher.h \
   unordered_lru_cache.h \
   llmq/quorums.h \
@@ -359,9 +360,9 @@ libbitcoin_server_a_SOURCES = \
   llmq/quorums_signing.cpp \
   llmq/quorums_signing_shares.cpp \
   llmq/quorums_utils.cpp \
-  masternode-payments.cpp \
-  masternode-sync.cpp \
-  masternode-utils.cpp \
+  masternode/masternode-payments.cpp \
+  masternode/masternode-sync.cpp \
+  masternode/masternode-utils.cpp \
   httprpc.cpp \
   httpserver.cpp \
   init.cpp \
@@ -420,9 +421,9 @@ endif
 libbitcoin_wallet_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_wallet_a_SOURCES = \
-  activemasternode.cpp \
+  masternode/activemasternode.cpp \
   hdmint/hdmint.cpp \
-  masternode-sync.cpp \
+  masternode/masternode-sync.cpp \
   hdmint/mintpool.cpp \
   hdmint/wallet.cpp \
   sigma.cpp \
@@ -497,7 +498,6 @@ crypto_libbitcoin_crypto_a_SOURCES += \
   crypto/progpow/lib/keccak/keccakf800.c \
   crypto/progpow/lib/support/attributes.h \
   crypto/progpow/helpers.hpp \
-  crypto/progpow/kiirocoinpow_test_vectors.hpp \
   crypto/progpow.h \
   crypto/progpow.cpp
 
@@ -506,6 +506,7 @@ libbitcoin_consensus_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(PIC_FLAGS
 libbitcoin_consensus_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) $(PIC_FLAGS)
 libbitcoin_consensus_a_SOURCES = \
   amount.h \
+  fund_payment.h \  
   arith_uint256.cpp \
   arith_uint256.h \
   bls/bls.cpp \
@@ -568,8 +569,10 @@ libbitcoin_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
 libbitcoin_common_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_common_a_SOURCES = \
   amount.cpp \
+  fund_payment.cpp \
   base58.cpp \
   chainparams.cpp \
+  masternode/masternode-collaterals.cpp \
   coins.cpp \
   compressor.cpp \
   core_read.cpp \

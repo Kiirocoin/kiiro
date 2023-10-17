@@ -280,6 +280,8 @@ public:
     std::vector<CTransactionRef> vtx;
 
     // memory only
+    mutable CTxOut txoutCommunity; // znode payment
+    mutable CTxOut txoutDevelopment; // znode payment
     mutable CTxOut txoutZnode; // znode payment
     mutable std::vector<CTxOut> voutSuperblock; // superblock payment
     mutable bool fChecked;
@@ -320,6 +322,8 @@ public:
     {
         CBlockHeader::SetNull();
         vtx.clear();
+        txoutCommunity = CTxOut();
+        txoutDevelopment = CTxOut();
         txoutZnode = CTxOut();
         voutSuperblock.clear();
         fChecked = false;

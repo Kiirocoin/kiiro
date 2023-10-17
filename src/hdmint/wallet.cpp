@@ -16,7 +16,7 @@
 #include "crypto/hmac_sha512.h"
 #include "keystore.h"
 #include <boost/optional.hpp>
-#include "masternode-sync.h"
+#include "masternode/masternode-sync.h"
 #include "ui_interface.h"
 
 /**

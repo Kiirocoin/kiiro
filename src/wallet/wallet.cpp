@@ -36,7 +36,7 @@
 #include "ui_interface.h"
 #include "utilmoneystr.h"
 #include "validation.h"
-#include "masternode-sync.h"
+#include "masternode/masternode-sync.h"
 #include "random.h"
 #include "init.h"
 #include "hdmint/wallet.h"
@@ -48,6 +48,7 @@
 #include "hdmint/tracker.h"
 
 #include "evo/deterministicmns.h"
+#include "masternode/masternode-collaterals.h"
 
 #include <assert.h>
 #include <boost/algorithm/string.hpp>
@@ -3414,9 +3415,9 @@ CAmount CWallet::GetImmatureWatchOnlyBalance() const
 
 void CWallet::AvailableCoins(std::vector <COutput> &vCoins, bool fOnlyConfirmed, const CCoinControl *coinControl, bool fIncludeZeroValue, bool fUseInstantSend) const
 {
-    static const int ZNODE_COIN_REQUIRED  = 1000;
     vCoins.clear();
     CoinType nCoinType = coinControl ? coinControl->nCoinType : CoinType::ALL_COINS;
+    CMasternodeCollaterals collaterals = Params().GetConsensus().nCollaterals;
 
     {
         LOCK2(cs_main, cs_wallet);
@@ -3488,12 +3489,12 @@ void CWallet::AvailableCoins(std::vector <COutput> &vCoins, bool fOnlyConfirmed,
                             || pcoin->tx->vout[i].scriptPubKey.IsZerocoinRemint()
                             || pcoin->tx->vout[i].scriptPubKey.IsLelantusMint()
                             || pcoin->tx->vout[i].scriptPubKey.IsLelantusJMint());
-                } else if (nCoinType == CoinType::ONLY_NOT1000IFMN) {
-                    found = !(fMasternodeMode && pcoin->tx->vout[i].nValue == ZNODE_COIN_REQUIRED * COIN);
-                } else if (nCoinType == CoinType::ONLY_NONDENOMINATED_NOT1000IFMN) {
-                    if (fMasternodeMode) found = pcoin->tx->vout[i].nValue != ZNODE_COIN_REQUIRED * COIN; // do not use Hot MN funds
-		} else if (nCoinType == CoinType::ONLY_1000) {
-                    found = pcoin->tx->vout[i].nValue == ZNODE_COIN_REQUIRED * COIN;
+                } else if (nCoinType == CoinType::ONLY_NOTCOLLATERALIFMN) {
+                    found = !(fMasternodeMode && collaterals.isValidCollateral(pcoin->tx->vout[i].nValue));
+                } else if (nCoinType == CoinType::ONLY_NONDENOMINATED_NOTCOLATERALRIFMN) {
+                    if (fMasternodeMode) found = !collaterals.isValidCollateral(pcoin->tx->vout[i].nValue); // do not use Hot MN funds
+		        } else if (nCoinType == CoinType::ONLY_COLLATERAL) {
+                    found = collaterals.isValidCollateral(pcoin->tx->vout[i].nValue);
                 } else {
                     found = true;
                 }
@@ -3503,7 +3504,7 @@ void CWallet::AvailableCoins(std::vector <COutput> &vCoins, bool fOnlyConfirmed,
 
 
                 if (!(IsSpent(wtxid, i)) && mine != ISMINE_NO &&
-                    (!IsLockedCoin((*it).first, i) || nCoinType == CoinType::ONLY_1000) &&
+                    (!IsLockedCoin((*it).first, i) || nCoinType == CoinType::ONLY_COLLATERAL) &&
                     (pcoin->tx->vout[i].nValue > 0 || fIncludeZeroValue || (pcoin->tx->vout[i].scriptPubKey.IsLelantusJMint() && GetCredit(pcoin->tx->vout[i], ISMINE_SPENDABLE) > 0)) &&
                     (!coinControl || !coinControl->HasSelected() || coinControl->fAllowOtherInputs || coinControl->IsSelected(COutPoint((*it).first, i)))) {
                         vCoins.push_back(COutput(pcoin, i, nDepth,
@@ -3557,7 +3558,7 @@ bool CWallet::GetZnodeVinAndKeys(CTxIn &txinRet, CPubKey &pubKeyRet, CKey &keyRe
     // Find possible candidates
     std::vector <COutput> vPossibleCoins;
     CCoinControl coinControl;
-    coinControl.nCoinType = CoinType::ONLY_1000;
+    coinControl.nCoinType = CoinType::ONLY_COLLATERAL;
     AvailableCoins(vPossibleCoins, true, &coinControl, false);
     if (vPossibleCoins.empty()) {
         LogPrintf("CWallet::GetZnodeVinAndKeys -- Could not locate any valid znode vin\n");
