@@ -172,10 +172,10 @@ CPubKey CWallet::GetKeyFromKeypath(uint32_t nChange, uint32_t nChild, CKey& secr
     CKey key;                      //master key seed (256bit)
     CExtKey masterKey;             //hd master key
     CExtKey purposeKey;            //key at m/44'
-    CExtKey coinTypeKey;           //key at m/44'/<1/19273>' (Testnet or Kiirocoin Coin Type respectively, according to SLIP-0044)
-    CExtKey accountKey;            //key at m/44'/<1/19273>'/0'
-    CExtKey externalChainChildKey; //key at m/44'/<1/19273>'/0'/<c> (Standard: 0/1, Mints: 2)
-    CExtKey childKey;              //key at m/44'/<1/19273>'/0'/<c>/<n>
+    CExtKey coinTypeKey;           //key at m/44'/<1/136>' (Testnet or Kiirocoin Coin Type respectively, according to SLIP-0044)
+    CExtKey accountKey;            //key at m/44'/<1/136>'/0'
+    CExtKey externalChainChildKey; //key at m/44'/<1/136>'/0'/<c> (Standard: 0/1, Mints: 2)
+    CExtKey childKey;              //key at m/44'/<1/136>'/0'/<c>/<n>
 
     if(hdChain.nVersion >= CHDChain::VERSION_WITH_BIP39){
         MnemonicContainer mContainer = mnemonicContainer;
@@ -193,16 +193,16 @@ CPubKey CWallet::GetKeyFromKeypath(uint32_t nChange, uint32_t nChild, CKey& secr
     // use hardened derivation (child keys >= 0x80000000 are hardened after bip32)
     masterKey.Derive(purposeKey, BIP44_INDEX | BIP32_HARDENED_KEY_LIMIT);
 
-    // derive m/44'/19273'
+    // derive m/44'/136'
     purposeKey.Derive(coinTypeKey, nIndex | BIP32_HARDENED_KEY_LIMIT);
 
-    // derive m/44'/19273'/0'
+    // derive m/44'/136'/0'
     coinTypeKey.Derive(accountKey, BIP32_HARDENED_KEY_LIMIT);
 
-    // derive m/44'/19273'/0'/<c>
+    // derive m/44'/136'/0'/<c>
     accountKey.Derive(externalChainChildKey, nChange);
 
-    // derive m/44'/19273'/0'/<c>/<n>
+    // derive m/44'/136'/0'/<c>/<n>
     externalChainChildKey.Derive(childKey, nChild);
 
     secret = childKey.key;
@@ -234,10 +234,10 @@ CPubKey CWallet::GenerateNewKey(uint32_t nChange, bool fWriteChain)
         CKey key;                      //master key seed (256bit)
         CExtKey masterKey;             //hd master key
         CExtKey purposeKey;            //key at m/44'
-        CExtKey coinTypeKey;           //key at m/44'/<1/19273>' (Testnet or Kiirocoin Coin Type respectively, according to SLIP-0044)
-        CExtKey accountKey;            //key at m/44'/<1/19273>'/0'
-        CExtKey externalChainChildKey; //key at m/44'/<1/19273>'/0'/<c> (Standard: 0/1, Mints: 2)
-        CExtKey childKey;              //key at m/44'/<1/19273>'/0'/<c>/<n>
+        CExtKey coinTypeKey;           //key at m/44'/<1/136>' (Testnet or Kiirocoin Coin Type respectively, according to SLIP-0044)
+        CExtKey accountKey;            //key at m/44'/<1/136>'/0'
+        CExtKey externalChainChildKey; //key at m/44'/<1/136>'/0'/<c> (Standard: 0/1, Mints: 2)
+        CExtKey childKey;              //key at m/44'/<1/136>'/0'/<c>/<n>
         //For bip39 we use it's original way for generating keys to make it compatible with hardware and software wallets
         if(hdChain.nVersion >= CHDChain::VERSION_WITH_BIP39){
             MnemonicContainer mContainer = mnemonicContainer;
@@ -255,13 +255,13 @@ CPubKey CWallet::GenerateNewKey(uint32_t nChange, bool fWriteChain)
         // use hardened derivation (child keys >= 0x80000000 are hardened after bip32)
         masterKey.Derive(purposeKey, BIP44_INDEX | BIP32_HARDENED_KEY_LIMIT);
 
-        // derive m/44'/19273'
+        // derive m/44'/136'
         purposeKey.Derive(coinTypeKey, nIndex | BIP32_HARDENED_KEY_LIMIT);
 
-        // derive m/44'/19273'/0'
+        // derive m/44'/136'/0'
         coinTypeKey.Derive(accountKey, BIP32_HARDENED_KEY_LIMIT);
 
-        // derive m/44'/19273'/0'/<c>
+        // derive m/44'/136'/0'/<c>
         accountKey.Derive(externalChainChildKey, nChange);
 
         // derive child key at next index, skip keys already known to the wallet

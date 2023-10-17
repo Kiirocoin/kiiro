@@ -164,7 +164,7 @@ private:
 
 /**
  * Contains and manages bip47 accounts. 
- * Wallet masterkey is derived using the m/47'/19273' path.
+ * Wallet masterkey is derived using the m/47'/136' path.
  */    
     
 class CWallet {
