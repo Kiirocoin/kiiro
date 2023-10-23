@@ -165,6 +165,9 @@ struct Params {
     /** percentage of block subsidy going to masternode */
     int stage3MasternodeShare;
 
+    /** Can only upgrade before this height, else reindex required */
+    int nStartCollateralChange;
+
     FundPayment nDevelopmentFundPayment;
     FundPayment nCommunityFundPayment;
     CMasternodeCollaterals nCollaterals;

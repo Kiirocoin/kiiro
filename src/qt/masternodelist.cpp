@@ -215,8 +215,6 @@ void MasternodeList::updateDIP3List()
         Coin coin;
         //should this be call directly or use pcoinsTip->GetCoin(outpoint, coin) without locking cs_main
         bool isValidUtxo = GetUTXOCoin(dmn->collateralOutpoint, coin);
-        CMasternodeCollaterals collaterals = Params().GetConsensus().nCollaterals;
-        int nHeight = chainActive.Tip() == NULL ? 0 : chainActive.Tip()->nHeight;
         QTableWidgetItem* addressItem = new QTableWidgetItem(QString::fromStdString(dmn->pdmnState->addr.ToString()));
         QTableWidgetItem* collateralAmountItem = new QTableWidgetItem(!isValidUtxo ? tr("Invalid") : QString::number(coin.out.nValue / COIN));
         QTableWidgetItem* statusItem = new QTableWidgetItem(mnList.IsMNValid(dmn) ? tr("ENABLED") : (mnList.IsMNPoSeBanned(dmn) ? tr("POSE_BANNED") : tr("UNKNOWN")));

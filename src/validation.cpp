@@ -559,7 +559,7 @@ bool GetUTXOCoin(const COutPoint& outpoint, Coin& coin, int height)
     LOCK(cs_main);
     bool gotCoin = pcoinsTip->GetCoin(outpoint, coin);
 
-    int tipHeight = chainActive.Tip() == nullptr ? 0 : chainActive.Tip()->nHeight;
+    int tipHeight = chainActive.Tip() == NULL ? 0 : chainActive.Tip()->nHeight;
     if (height != tipHeight) {
         CSpentIndexKey key(outpoint.hash, outpoint.n);
         CSpentIndexValue value;
@@ -2916,7 +2916,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     if (!IsBlockPayeeValid(*block.vtx[0], pindex->nHeight, pindex->nTime, blockSubsidy)) {
         mapRejectedBlocks.insert(std::make_pair(block.GetHash(), GetTime()));
-        return state.DoS(0, error("ConnectBlock(EVPZNODES): couldn't find evo znode payments"),
+        return state.DoS(0, error("ConnectBlock(EVOZNODES): couldn't find evo znode payments"),
                                 REJECT_INVALID, "bad-cb-payee");
     }
 
@@ -4885,7 +4885,8 @@ bool ProcessNewBlock(const CChainParams& chainparams, const std::shared_ptr<cons
 
         // Ensure that CheckBlock() passes before calling AcceptBlock, as
         // belt-and-suspenders.
-        bool ret = CheckBlock(*pblock, state, chainparams.GetConsensus());
+        int nHeight = chainActive.Tip()->nHeight + 1;
+        bool ret = CheckBlock(*pblock, state, chainparams.GetConsensus(), true, true, nHeight);
 
         if (ret) {
             // Store to disk

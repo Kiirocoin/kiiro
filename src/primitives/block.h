@@ -280,8 +280,8 @@ public:
     std::vector<CTransactionRef> vtx;
 
     // memory only
-    mutable CTxOut txoutCommunity; // znode payment
-    mutable CTxOut txoutDevelopment; // znode payment
+    mutable CTxOut txoutCommunity; // community payment
+    mutable CTxOut txoutDevelopment; // development payment
     mutable CTxOut txoutZnode; // znode payment
     mutable std::vector<CTxOut> voutSuperblock; // superblock payment
     mutable bool fChecked;

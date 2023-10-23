@@ -47,9 +47,7 @@ void FundPayment::FillFundPayment(CMutableTransaction& txNew, int nBlockHeight, 
 }
 
 bool FundPayment::IsBlockPayeeValid(const CTransaction& txNew, const int height, const CAmount blockReward) {
-	CScript payee;
-	// fill payee with the development fund address
-	payee = GetScriptForDestination(CBitcoinAddress(fundAddress).Get());
+	CScript payee = GetScriptForDestination(CBitcoinAddress(fundAddress).Get());
 	const CAmount fundReward = getFundPaymentAmount(height, blockReward);
 
 	BOOST_FOREACH(const CTxOut& out, txNew.vout) {
@@ -60,6 +58,5 @@ bool FundPayment::IsBlockPayeeValid(const CTransaction& txNew, const int height,
 
 	return false;
 }
-
 
 

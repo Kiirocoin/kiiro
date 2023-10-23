@@ -9,7 +9,6 @@
 #include "base58.h"
 #include "chainparams.h"
 #include "clientversion.h"
-#include "coins.h"
 #include "core_io.h"
 #include "hash.h"
 #include "messagesigner.h"
