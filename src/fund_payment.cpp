@@ -43,7 +43,6 @@ void FundPayment::FillFundPayment(CMutableTransaction& txNew, int nBlockHeight, 
     txNew.vout[0].nValue -= fundPayment;
     txoutFundRet = CTxOut(fundPayment, payee);
     txNew.vout.push_back(txoutFundRet);
-    LogPrintf("FundPayment::FillFundPayment -- Fund payment %lld to %s\n", fundPayment, fundAddress.c_str());
 }
 
 bool FundPayment::IsBlockPayeeValid(const CTransaction& txNew, const int height, const CAmount blockReward) {
