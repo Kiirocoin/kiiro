@@ -1871,6 +1871,11 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
                     break;
                 }
 
+                if (!deterministicMNManager->MigrateDBIfNeeded()) {
+                    strLoadError = _("Error upgrading evo database");
+                    break;
+                }                
+
                 if (!fReindex && chainActive.Tip() != NULL) {
                     uiInterface.InitMessage(_("Rewinding blocks..."));
                     if (!RewindBlockIndex(chainparams)) {

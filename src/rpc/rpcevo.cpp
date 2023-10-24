@@ -42,21 +42,14 @@ extern UniValue signrawtransaction(const JSONRPCRequest& request);
 extern UniValue sendrawtransaction(const JSONRPCRequest& request);
 #endif//ENABLE_WALLET
 
-std::string get_current_dir()
-{
-  char buff[FILENAME_MAX];
-  char* r = getcwd(buff, FILENAME_MAX);
-  (void*)r;
-  std::string current_dir(buff);
-//  current_dir += '/';
-#ifdef WIN32
-	std::replace(current_dir.begin(), current_dir.end(), '\\', '/');
-#endif
-	return current_dir;
-}
 static const std::string LOWER_CASE = "abcdefghijklmnopqrstuvwxyz";
 static const std::string SPECIAL = "~!@#$%^&*+<>[];:,.?|";
 static const std::string NUMBER = "0123456789";
+
+static std::string split_str(std::string s, std::string del) {
+    int end = s.find(del); 
+    return s.substr(0, end);
+}
 
 static std::string generateRandomString(int length, bool specialChar) {
 	std::time_t now = std::time(0);
@@ -101,7 +94,7 @@ std::string GetHelpString(int nParamNum, std::string strParamName)
 {
     static const std::map<std::string, std::string> mapParamHelp = {
         {"collateralAddress",
-            "%d. \"collateralAddress\"        (string, required) The bitoreum address to send the collateral to.\n"
+            "%d. \"collateralAddress\"        (string, required) The Kiirocoin address to send the collateral to.\n"
         },
         {"collateralAmount",
             "%d. \"collateralAmount\"        (numeric, required) The collateral amount to be sent to collateral address.\n"
@@ -1099,7 +1092,7 @@ UniValue signMessage(CWallet * const pwallet, std::string strAddress, std::strin
 
 UniValue createConfigFile(std::string blsPrivateKey, std::string ip, std::string address) {
 
-	std::string fileName = get_current_dir() + "/" + address + "_kiirocoin.conf";
+	std::string fileName = GetDataDir().string() + "/" + address + "_" + split_str(ip,":") + "_kiirocoin.conf";
 	std::ofstream configFile(fileName);
 	std::string username = generateRandomString(10, false);
 	std::string password = generateRandomString(20, true);
@@ -1322,7 +1315,7 @@ UniValue protx_list(const JSONRPCRequest& request)
         if (request.params.size() > 4) {
             protx_list_help();
         }
-
+        
         LOCK(cs_main);
 
         bool detailed = request.params.size() > 2 ? ParseBoolV(request.params[2], "detailed") : false;
@@ -1334,7 +1327,7 @@ UniValue protx_list(const JSONRPCRequest& request)
 
         CDeterministicMNList mnList = deterministicMNManager->GetListForBlock(chainActive[height]);
         bool onlyValid = type == "valid";
-        mnList.ForEachMN(onlyValid, [&](const CDeterministicMNCPtr& dmn) {
+        mnList.ForEachMN(onlyValid, height, [&](const CDeterministicMNCPtr& dmn) {
             ret.push_back(BuildDMNListEntry(pwallet, dmn, detailed));
         });
     } else {

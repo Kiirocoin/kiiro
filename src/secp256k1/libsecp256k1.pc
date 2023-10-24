@@ -1,4 +1,4 @@
-prefix=/
+prefix=/home/kiiro/src/build/kiiro/depends/x86_64-pc-linux-gnu
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include

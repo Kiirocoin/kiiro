@@ -196,14 +196,16 @@ public:
         consensus.stage3DevelopmentFundAddress = "KWTco92wURX5Jwu3mMdWrs36j574meAvew";
         consensus.stage3CommunityFundAddress = "KDW8CeScVpWFzekvZm4f37qs5GxByEGSKE";
 
+        consensus.nStartCollateralChange = 75000;
+
         std::vector<FundRewardStructure> rewardStructures = { {INT_MAX, 10}  }; // 10% dev/community fee forever
         consensus.nDevelopmentFundPayment = FundPayment(rewardStructures, 30, "KWTco92wURX5Jwu3mMdWrs36j574meAvew");
         consensus.nCommunityFundPayment = FundPayment(rewardStructures, 30,"KDW8CeScVpWFzekvZm4f37qs5GxByEGSKE");
         consensus.nCollaterals = CMasternodeCollaterals(
-          { {65000, 1000 * COIN}, // Block 0 - 64999 Collateral 1000
-            {115000, 2500 * COIN}, // Block 65000 - 114999 Collateral 2500
-            {165000, 3000 * COIN}, // Block 115000 - 164999 Collateral 3000
-            {INT_MAX, 4000 * COIN} // Block 170000 - Infinity Collateral 4000
+          { {75000, 1000 * COIN}, // Block 0 - 74999 Collateral 1000
+            {125000, 2500 * COIN}, // Block 75000 - 124999 Collateral 2500
+            {175000, 3000 * COIN}, // Block 125000 - 174999 Collateral 3000
+            {INT_MAX, 4000 * COIN} // Block 175000 - Infinity Collateral 4000
           },
           { {INT_MAX, 60} }
         );        
@@ -371,10 +373,10 @@ public:
         };
 
         chainTxData = ChainTxData{
-                0, // * UNIX timestamp of last checkpoint block
-                0,     // * total number of transactions between genesis and last checkpoint
+                1697443237, // * UNIX timestamp of last checkpoint block
+                121940,     // * total number of transactions between genesis and last checkpoint
                             //   (the tx=... number in the SetBestChain debug.log lines)
-                0       // * estimated number of transactions per second after checkpoint
+                0.014       // * estimated number of transactions per second after checkpoint
         };
         consensus.nSpendV15StartBlock = ZC_V1_5_STARTING_BLOCK;
         consensus.nSpendV2ID_1 = ZC_V2_SWITCH_ID_1;
@@ -512,6 +514,8 @@ public:
         consensus.stage3MasternodeShare = 50;
         consensus.stage3DevelopmentFundAddress = "TWDxLLKsFp6qcV1LL4U2uNmW4HwMcapmMU";
         consensus.stage3CommunityFundAddress = "TCkC4uoErEyCB4MK3d6ouyJELoXnuyqe9L";
+
+        consensus.nStartCollateralChange = 50;
 
         std::vector<FundRewardStructure> rewardStructures = { {INT_MAX, 10}  }; // 10% dev/community fee forever
         consensus.nDevelopmentFundPayment = FundPayment(rewardStructures, 1, "TWDxLLKsFp6qcV1LL4U2uNmW4HwMcapmMU");
@@ -790,6 +794,8 @@ public:
         consensus.stage3DevelopmentFundAddress = "TepVKkmUo1N6sazuM2wWwV7aiG4m1BUShU";
         consensus.stage3CommunityFundAddress = "TZpbhfvQE61USHsxd55XdPpWBqu3SXB1EP";
 
+        consensus.nStartCollateralChange = 200;
+
         std::vector<FundRewardStructure> rewardStructures = { {INT_MAX, 10}  }; // 10% dev/community fee forever
         consensus.nDevelopmentFundPayment = FundPayment(rewardStructures, 30, "TepVKkmUo1N6sazuM2wWwV7aiG4m1BUShU");
         consensus.nCommunityFundPayment = FundPayment(rewardStructures, 30,"TZpbhfvQE61USHsxd55XdPpWBqu3SXB1EP");
@@ -1028,6 +1034,8 @@ public:
         consensus.stage3MasternodeShare = 50;
         consensus.stage3DevelopmentFundAddress = "TGEGf26GwyUBE2P2o2beBAfE9Y438dCp5t";  // private key cMrz8Df36VR9TvZjtvSqLPhUQR7pcpkXRXaLNYUxfkKsRuCzHpAN
         consensus.stage3CommunityFundAddress = "TJmPzeJF4DECrBwUftc265U7rTPxKmpa4F";  // private key cTyPWqTMM1CgT5qy3K3LSgC1H6Q2RHvnXZHvjWtKB4vq9qXqKmMu
+
+        consensus.nStartCollateralChange = 200;
 
         std::vector<FundRewardStructure> rewardStructures = { {INT_MAX, 10}  }; // 10% dev/community fee forever
         consensus.nDevelopmentFundPayment = FundPayment(rewardStructures, 1, "TGEGf26GwyUBE2P2o2beBAfE9Y438dCp5t");
