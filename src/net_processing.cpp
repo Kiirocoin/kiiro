@@ -1446,10 +1446,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             if (sscanf(cleanSubVer.c_str(), "/Kiiroshi:%2d.%2d.%2d.%2d/",
                     &parsedVersion[0], &parsedVersion[1], &parsedVersion[2], &parsedVersion[3]) >= 2) {
                 int peerClientVersion = parsedVersion[0]*1000000 + parsedVersion[1]*10000 + parsedVersion[2]*100 + parsedVersion[3];
-
-                LogPrintf("Peer ChangeHeight: %d Height: %d peerClientVersion: %d CLIENT_VERSION: %d \n", Params().GetConsensus().nStartCollateralChange, chainActive.Height(), peerClientVersion,CLIENT_VERSION);
-
-                if (peerClientVersion < MIN_KIIRO_CLIENT_VERSION || (chainActive.Height() >= Params().GetConsensus().nStartCollateralChange && peerClientVersion < CLIENT_VERSION) ) {
+                if (peerClientVersion < MIN_KIIRO_CLIENT_VERSION || (chainActive.Height() >= Params().GetConsensus().nStartCollateralChange && peerClientVersion < CLIENT_VERSION)) {
                     connman.PushMessage(pfrom, CNetMsgMaker(INIT_PROTO_VERSION).Make(NetMsgType::REJECT, strCommand, REJECT_OBSOLETE, "This version is banned from the network"));
                     pfrom->fDisconnect = 1;
                     LOCK(cs_main);
