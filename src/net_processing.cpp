@@ -1443,7 +1443,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             vRecv >> LIMITED_STRING(strSubVer, MAX_SUBVERSION_LENGTH);
             cleanSubVer = SanitizeString(strSubVer);
             int parsedVersion[4] = {0, 0, 0, 0};
-            if (sscanf(cleanSubVer.c_str(), "/Satoshi:%2d.%2d.%2d.%2d/",
+            if (sscanf(cleanSubVer.c_str(), "/Kiiroshi:%2d.%2d.%2d.%2d/",
                     &parsedVersion[0], &parsedVersion[1], &parsedVersion[2], &parsedVersion[3]) >= 2) {
                 int peerClientVersion = parsedVersion[0]*1000000 + parsedVersion[1]*10000 + parsedVersion[2]*100 + parsedVersion[3];
                 if (peerClientVersion < MIN_KIIRO_CLIENT_VERSION) {
