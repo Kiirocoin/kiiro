@@ -44,11 +44,13 @@ Update the following:
     - `_CLIENT_VERSION_MAJOR`
     - `_CLIENT_VERSION_MINOR`
     - `_CLIENT_VERSION_REVISION`
+    - `_CLIENT_VERSION_BUILD`
     - Don't forget to set `_CLIENT_VERSION_IS_RELEASE` to `true`
 - `src/clientversion.h`: (this mirrors `configure.ac` - see issue #3539)
     - `CLIENT_VERSION_MAJOR`
     - `CLIENT_VERSION_MINOR`
     - `CLIENT_VERSION_REVISION`
+    - `_CLIENT_VERSION_BUILD`
     - Don't forget to set `CLIENT_VERSION_IS_RELEASE` to `true`
 - `doc/README.md` and `doc/README_windows.txt`
 - `doc/Doxyfile`: `PROJECT_NUMBER` contains the full version

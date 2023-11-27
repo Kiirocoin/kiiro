@@ -40,7 +40,7 @@
 #include <queue>
 #include <unistd.h>
 
-#include "masternode-payments.h"
+#include "masternode/masternode-payments.h"
 
 #include "evo/specialtx.h"
 #include "evo/cbtx.h"
@@ -810,16 +810,12 @@ void BlockAssembler::FillFoundersReward(CMutableTransaction &coinbaseTx, bool fM
     if (nHeight >= params.nSubsidyHalvingFirst && nHeight < params.nSubsidyHalvingSecond) {
         if (fShorterBlockDistance) {
             // Stage 3
-            CScript devPayoutScript = GetScriptForDestination(CBitcoinAddress(params.stage3DevelopmentFundAddress).Get());
-            CAmount devPayoutValue = (GetBlockSubsidyWithMTPFlag(nHeight, params, fMTP, true) * params.stage3DevelopmentFundShare) / 100;
-            CScript communityPayoutScript = GetScriptForDestination(CBitcoinAddress(params.stage3CommunityFundAddress).Get());
-            CAmount communityPayoutValue = (GetBlockSubsidyWithMTPFlag(nHeight, params, fMTP, true) * params.stage3CommunityFundShare) / 100;
+    		CAmount nAmount = GetBlockSubsidyWithMTPFlag(nHeight, params, fMTP, true);
+    		FundPayment DevelopmentFundPayment = params.nDevelopmentFundPayment;
+            DevelopmentFundPayment.FillFundPayment(coinbaseTx, nHeight, nAmount,pblock->txoutDevelopment);
 
-            coinbaseTx.vout[0].nValue -= devPayoutValue;
-            coinbaseTx.vout.push_back(CTxOut(devPayoutValue, devPayoutScript));
-
-            coinbaseTx.vout[0].nValue -= communityPayoutValue;
-            coinbaseTx.vout.push_back(CTxOut(communityPayoutValue, communityPayoutScript));
+    		FundPayment communityFundPayment = params.nCommunityFundPayment;
+            communityFundPayment.FillFundPayment(coinbaseTx, nHeight, nAmount,pblock->txoutCommunity);
         }
         else {
             // Stage 2

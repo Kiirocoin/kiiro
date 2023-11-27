@@ -6,7 +6,7 @@
 #include "coins.h"
 #include "guiutil.h"
 #include "init.h"
-#include "masternode-sync.h"
+#include "masternode/masternode-sync.h"
 #include "netbase.h"
 #include "sync.h"
 #include "validation.h"
@@ -40,6 +40,7 @@ MasternodeList::MasternodeList(const PlatformStyle* platformStyle, QWidget* pare
     int columnPayeeWidth = 130;
     int columnOperatorRewardWidth = 130;
     int columnCollateralWidth = 130;
+    int columnCollateralAmountWidth = 130;
     int columnOwnerWidth = 130;
     numColumn = 0;
 
@@ -52,6 +53,7 @@ MasternodeList::MasternodeList(const PlatformStyle* platformStyle, QWidget* pare
     ui->tableWidgetMasternodesDIP3->setColumnWidth(numColumn++, columnPayeeWidth);
     ui->tableWidgetMasternodesDIP3->setColumnWidth(numColumn++, columnOperatorRewardWidth);
     ui->tableWidgetMasternodesDIP3->setColumnWidth(numColumn++, columnCollateralWidth);
+    ui->tableWidgetMasternodesDIP3->setColumnWidth(numColumn++, columnCollateralAmountWidth);
     ui->tableWidgetMasternodesDIP3->setColumnWidth(numColumn++, columnOwnerWidth);
 
     // dummy column for proTxHash
@@ -210,7 +212,11 @@ void MasternodeList::updateDIP3List()
         }
         // populate list
         // Address, Protocol, Status, Active Seconds, Last Seen, Pub Key
+        Coin coin;
+        //should this be call directly or use pcoinsTip->GetCoin(outpoint, coin) without locking cs_main
+        bool isValidUtxo = GetUTXOCoin(dmn->collateralOutpoint, coin);
         QTableWidgetItem* addressItem = new QTableWidgetItem(QString::fromStdString(dmn->pdmnState->addr.ToString()));
+        QTableWidgetItem* collateralAmountItem = new QTableWidgetItem(!isValidUtxo ? tr("Invalid") : QString::number(coin.out.nValue / COIN));
         QTableWidgetItem* statusItem = new QTableWidgetItem(mnList.IsMNValid(dmn) ? tr("ENABLED") : (mnList.IsMNPoSeBanned(dmn) ? tr("POSE_BANNED") : tr("UNKNOWN")));
         QTableWidgetItem* PoSeScoreItem = new QTableWidgetItem(QString::number(dmn->pdmnState->nPoSePenalty));
         QTableWidgetItem* registeredItem = new QTableWidgetItem(QString::number(dmn->pdmnState->nRegisteredHeight));
@@ -263,6 +269,7 @@ void MasternodeList::updateDIP3List()
                           payeeItem->text() + " " +
                           operatorRewardItem->text() + " " +
                           collateralItem->text() + " " +
+			  collateralAmountItem->text() + " " +
                           ownerItem->text() + " " +
                           proTxHashItem->text();
             if (!strToFilter.contains(strCurrentFilterDIP3)) return;
@@ -279,6 +286,7 @@ void MasternodeList::updateDIP3List()
         ui->tableWidgetMasternodesDIP3->setItem(0, numColumn++, payeeItem);
         ui->tableWidgetMasternodesDIP3->setItem(0, numColumn++, operatorRewardItem);
         ui->tableWidgetMasternodesDIP3->setItem(0, numColumn++, collateralItem);
+        ui->tableWidgetMasternodesDIP3->setItem(0, numColumn++, collateralAmountItem);
         ui->tableWidgetMasternodesDIP3->setItem(0, numColumn++, ownerItem);
         ui->tableWidgetMasternodesDIP3->setItem(0, numColumn, proTxHashItem);
     });

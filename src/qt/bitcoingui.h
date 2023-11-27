@@ -37,6 +37,10 @@ QT_BEGIN_NAMESPACE
 class QAction;
 class QProgressBar;
 class QProgressDialog;
+class QNetworkAccessManager;
+class QNetworkRequest;
+class QNetworkReply;
+class QPushButton;
 QT_END_NAMESPACE
 
 namespace GUIUtil {
@@ -97,6 +101,8 @@ private:
     QLabel *progressBarLabel;
     GUIUtil::ClickableProgressBar *progressBar;
     QProgressDialog *progressDialog;
+    QNetworkAccessManager *networkVersionManager;
+    QPushButton *buttonVersionUpdate;
 
     QMenuBar *appMenuBar;
     QAction *overviewAction;
@@ -170,6 +176,8 @@ private:
 
     void updateHeadersSyncProgressLabel();
 
+    void getLatestVersion();    
+
 Q_SIGNALS:
     /** Signal raised when a URI was entered or dragged to the GUI */
     void receivedURI(const QString &uri);
@@ -192,6 +200,9 @@ public Q_SLOTS:
        @param[in] ret       pointer to a bool that will be modified to whether Ok was clicked (modal only)
     */
     void message(const QString &title, const QString &message, unsigned int style, bool *ret = NULL);
+
+    //** Check GitHub for a new version */
+    void getLatestVersionReplyFinished(QNetworkReply *reply);
 
 #ifdef ENABLE_WALLET
     /** Set the encryption status as shown in the UI.
@@ -293,6 +304,10 @@ public Q_SLOTS:
 
     /** Update RAP Addresses page visibility */
     void setRapAddressesVisible(bool);
+
+    /** Open Github release page for new version */
+    void versionUpdateClicked();
+
 };
 
 class UnitDisplayStatusBarControl : public QLabel

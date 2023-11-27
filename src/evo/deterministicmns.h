@@ -27,6 +27,55 @@ namespace llmq
     class CFinalCommitment;
 }
 
+// TODO: To remove this in the future
+class CDeterministicMNState_Oldformat
+{
+private:
+    int nPoSeBanHeight{-1};
+
+    friend class CDeterministicMNStateDiff;
+    friend class CDeterministicMNState;
+
+public:
+    int nRegisteredHeight{-1};
+    int nLastPaidHeight{0};
+    int nPoSePenalty{0};
+    int nPoSeRevivedHeight{-1};
+    uint16_t nRevocationReason{CProUpRevTx::REASON_NOT_SPECIFIED};
+    uint256 confirmedHash;
+    uint256 confirmedHashWithProRegTxHash;
+    CKeyID keyIDOwner;
+    CBLSLazyPublicKey pubKeyOperator;
+    CKeyID keyIDVoting;
+    CService addr;
+    CScript scriptPayout;
+    CScript scriptOperatorPayout;
+
+public:
+    CDeterministicMNState_Oldformat() {}
+
+    ADD_SERIALIZE_METHODS;
+
+    template <typename Stream, typename Operation>
+    inline void SerializationOp(Stream& s, Operation ser_action)
+    {
+        READWRITE(nRegisteredHeight);
+        READWRITE(nLastPaidHeight);
+        READWRITE(nPoSePenalty);
+        READWRITE(nPoSeRevivedHeight);
+        READWRITE(nPoSeBanHeight);
+        READWRITE(nRevocationReason);
+        READWRITE(confirmedHash);
+        READWRITE(confirmedHashWithProRegTxHash);
+        READWRITE(keyIDOwner);
+        READWRITE(pubKeyOperator);
+        READWRITE(keyIDVoting);
+        READWRITE(addr);
+        READWRITE(scriptPayout);
+        READWRITE(scriptOperatorPayout);
+    }
+};
+
 class CDeterministicMNState
 {
 public:
@@ -42,6 +91,8 @@ public:
     // sha256(proTxHash, confirmedHash) to speed up quorum calculations
     // please note that this is NOT a double-sha256 hash
     uint256 confirmedHashWithProRegTxHash;
+    //collateral amount used in quorum calculations
+    CAmount nCollateralAmount;
 
     CKeyID keyIDOwner;
     CBLSLazyPublicKey pubKeyOperator;
@@ -60,6 +111,23 @@ public:
         addr = proTx.addr;
         scriptPayout = proTx.scriptPayout;
     }
+    CDeterministicMNState(const CDeterministicMNState_Oldformat& s) :
+        nPoSeBanHeight(s.nPoSeBanHeight),
+        nRegisteredHeight(s.nRegisteredHeight),
+        nLastPaidHeight(s.nLastPaidHeight),
+        nPoSePenalty(s.nPoSePenalty),
+        nPoSeRevivedHeight(s.nPoSeRevivedHeight),
+        nRevocationReason(s.nRevocationReason),
+        confirmedHash(s.confirmedHash),
+        confirmedHashWithProRegTxHash(s.confirmedHashWithProRegTxHash),
+        keyIDOwner(s.keyIDOwner),
+        pubKeyOperator(s.pubKeyOperator),
+        keyIDVoting(s.keyIDVoting),
+        addr(s.addr),
+        scriptPayout(s.scriptPayout),
+        scriptOperatorPayout(s.scriptOperatorPayout),
+        nCollateralAmount(1000 * COIN) {}    
+    
     template <typename Stream>
     CDeterministicMNState(deserialize_type, Stream& s)
     {
@@ -85,6 +153,7 @@ public:
         READWRITE(addr);
         READWRITE(scriptPayout);
         READWRITE(scriptOperatorPayout);
+        READWRITE(nCollateralAmount);
     }
 
     void ResetOperatorFields()
@@ -96,10 +165,24 @@ public:
     }
     void BanIfNotBanned(int height)
     {
-        if (nPoSeBanHeight == -1) {
+        if (!IsBanned()) {
             nPoSeBanHeight = height;
         }
     }
+    int GetBannedHeight() const
+    {
+        return nPoSeBanHeight;
+    }
+    bool IsBanned() const
+    {
+        return nPoSeBanHeight != -1;
+    }
+    void Revive(int nRevivedHeight)
+    {
+        nPoSePenalty = 0;
+        nPoSeBanHeight = -1;
+        nPoSeRevivedHeight = nRevivedHeight;
+    }    
     void UpdateConfirmedHash(const uint256& _proTxHash, const uint256& _confirmedHash)
     {
         confirmedHash = _confirmedHash;
@@ -134,6 +217,7 @@ public:
         Field_addr                              = 0x0800,
         Field_scriptPayout                      = 0x1000,
         Field_scriptOperatorPayout              = 0x2000,
+        Field_nCollateralAmount                 = 0x4000,
     };
 
 #define DMN_STATE_DIFF_ALL_FIELDS \
@@ -150,7 +234,8 @@ public:
     DMN_STATE_DIFF_LINE(keyIDVoting) \
     DMN_STATE_DIFF_LINE(addr) \
     DMN_STATE_DIFF_LINE(scriptPayout) \
-    DMN_STATE_DIFF_LINE(scriptOperatorPayout)
+    DMN_STATE_DIFF_LINE(scriptOperatorPayout) \
+    DMN_STATE_DIFF_LINE(nCollateralAmount)
 
 public:
     uint32_t fields{0};
@@ -190,9 +275,9 @@ class CDeterministicMN
 public:
     CDeterministicMN() {}
     template <typename Stream>
-    CDeterministicMN(deserialize_type, Stream& s)
+    CDeterministicMN(deserialize_type, Stream& s, bool oldFormat = false)
     {
-        s >> *this;
+        SerializationOp(s, CSerActionUnserialize(), oldFormat);
     }
 
     uint256 proTxHash;
@@ -206,12 +291,16 @@ public:
     inline void SerializationOp(Stream& s, Operation ser_action, bool oldFormat)
     {
         READWRITE(proTxHash);
-        if (!oldFormat) {
-            READWRITE(VARINT(internalId));
-        }
+        READWRITE(VARINT(internalId));
         READWRITE(collateralOutpoint);
         READWRITE(nOperatorReward);
-        READWRITE(pdmnState);
+        if (ser_action.ForRead() && oldFormat) {
+            CDeterministicMNState_Oldformat old_state;
+            READWRITE(old_state);
+            pdmnState = std::make_shared<const CDeterministicMNState>(old_state);  
+        } else {
+            READWRITE(pdmnState);
+        }
     }
 
     template<typename Stream>
@@ -317,7 +406,7 @@ public:
     }
 
     template<typename Stream>
-    void Unserialize(Stream& s) {
+    void Unserialize(Stream& s, bool oldFormat = false) {
         mnMap = MnMap();
         mnUniquePropertyMap = MnUniquePropertyMap();
         mnInternalIdMap = MnInternalIdMap();
@@ -326,7 +415,12 @@ public:
 
         size_t cnt = ReadCompactSize(s);
         for (size_t i = 0; i < cnt; i++) {
-            AddMN(std::make_shared<CDeterministicMN>(deserialize, s));
+            if (oldFormat) {
+                const auto dmn = std::make_shared<CDeterministicMN>(deserialize, s, oldFormat);
+                mnMap = mnMap.set(dmn->proTxHash, dmn);
+            } else {
+                AddMN(std::make_shared<CDeterministicMN>(deserialize, s));
+            }
         }
     }
 
@@ -345,6 +439,16 @@ public:
             }
         }
         return count;
+    }
+
+    template <typename Callback>
+    void ForEachMN(bool onlyValid, int height, Callback&& cb) const
+    {
+        for (const auto& p : mnMap) {
+            if (!onlyValid || IsMNValid(p.second, height)) {
+                cb(p.second);
+            }
+        }
     }
 
     template <typename Callback>
@@ -385,6 +489,7 @@ public:
 
     bool IsMNValid(const uint256& proTxHash) const;
     bool IsMNPoSeBanned(const uint256& proTxHash) const;
+    bool IsMNValid(const CDeterministicMNCPtr& dmn, int height) const;
     bool IsMNValid(const CDeterministicMNCPtr& dmn) const;
     bool IsMNPoSeBanned(const CDeterministicMNCPtr& dmn) const;
 
@@ -410,7 +515,6 @@ public:
     CDeterministicMNCPtr GetMNByCollateral(const COutPoint& collateralOutpoint) const;
     CDeterministicMNCPtr GetValidMNByCollateral(const COutPoint& collateralOutpoint) const;
     CDeterministicMNCPtr GetMNByService(const CService& service) const;
-    CDeterministicMNCPtr GetValidMNByService(const CService& service) const;
     CDeterministicMNCPtr GetMNByInternalId(uint64_t internalId) const;
     CDeterministicMNCPtr GetMNPayee() const;
 
@@ -541,6 +645,7 @@ private:
 class CDeterministicMNListDiff
 {
 public:
+    int nHeight{-1}; //memory only
     std::vector<CDeterministicMNCPtr> addedMNs;
     // keys are all relating to the internalId of MNs
     std::map<uint64_t, CDeterministicMNStateDiff> updatedMNs;
@@ -563,14 +668,23 @@ public:
     }
 
     template<typename Stream>
-    void Unserialize(Stream& s)
+    void Unserialize(Stream& s, bool oldFormat = false)
     {
         updatedMNs.clear();
         removedMns.clear();
 
         size_t tmp;
         uint64_t tmp2;
-        s >> addedMNs;
+        //s >> addedMNs;
+        tmp = ReadCompactSize(s);
+        for (size_t i = 0; i < tmp; i++) {
+            CDeterministicMN mn = {};
+            // Unserialise CDeterministicMN using CURRENT_MN_FORMAT and set it's type to the default value TYPE_REGULAR_MASTERNODE
+            // It will be later written with format MN_TYPE_FORMAT which includes the type field.
+            mn.Unserialize(s, oldFormat);
+            auto dmn = std::make_shared<CDeterministicMN>(mn);
+            addedMNs.push_back(dmn);
+        }        
         tmp = ReadCompactSize(s);
         for (size_t i = 0; i < tmp; i++) {
             CDeterministicMNStateDiff diff;
@@ -589,37 +703,6 @@ public:
     bool HasChanges() const
     {
         return !addedMNs.empty() || !updatedMNs.empty() || !removedMns.empty();
-    }
-};
-
-// TODO can be removed in a future version
-class CDeterministicMNListDiff_OldFormat
-{
-public:
-    uint256 prevBlockHash;
-    uint256 blockHash;
-    int nHeight{-1};
-    std::map<uint256, CDeterministicMNCPtr> addedMNs;
-    std::map<uint256, CDeterministicMNStateCPtr> updatedMNs;
-    std::set<uint256> removedMns;
-
-public:
-    template<typename Stream>
-    void Unserialize(Stream& s) {
-        addedMNs.clear();
-        s >> prevBlockHash;
-        s >> blockHash;
-        s >> nHeight;
-        size_t cnt = ReadCompactSize(s);
-        for (size_t i = 0; i < cnt; i++) {
-            uint256 proTxHash;
-            auto dmn = std::make_shared<CDeterministicMN>();
-            s >> proTxHash;
-            dmn->Unserialize(s, true);
-            addedMNs.emplace(proTxHash, dmn);
-        }
-        s >> updatedMNs;
-        s >> removedMns;
     }
 };
 
@@ -657,12 +740,9 @@ public:
     bool IsProTxWithCollateral(const CTransactionRef& tx, uint32_t n);
 
     bool IsDIP3Enforced(int nHeight = -1);
-
-public:
-    // TODO these can all be removed in a future version
-    bool UpgradeDiff(CDBBatch& batch, const CBlockIndex* pindexNext, const CDeterministicMNList& curMNList, CDeterministicMNList& newMNList);
-    void UpgradeDBIfNeeded();
-    static bool IsDIP3Active(int height);
+    
+    void MigrateDiff(CDBBatch& batch, const CBlockIndex* pindexNext, const CDeterministicMNList& curMNList, CDeterministicMNList& newMNList);    
+    bool MigrateDBIfNeeded();
 
 private:
     void CleanupCache(int nHeight);
