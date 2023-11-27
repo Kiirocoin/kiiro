@@ -506,6 +506,10 @@ UniValue masternodelist(const JSONRPCRequest& request)
             objMN.push_back(Pair("owneraddress", CBitcoinAddress(dmn->pdmnState->keyIDOwner).ToString()));
             objMN.push_back(Pair("votingaddress", CBitcoinAddress(dmn->pdmnState->keyIDVoting).ToString()));
             objMN.push_back(Pair("collateraladdress", collateralAddressStr));
+            objMN.push_back(Pair("collateralamount", dmn->pdmnState->nCollateralAmount/COIN));
+            CMasternodeCollaterals collaterals = Params().GetConsensus().nCollaterals;
+            int nHeight = chainActive.Tip() == NULL ? 0 : chainActive.Tip()->nHeight;
+            objMN.push_back(Pair("needToUpgrade", !collaterals.isPayableCollateral(nHeight, dmn->pdmnState->nCollateralAmount)));
             objMN.push_back(Pair("pubkeyoperator", dmn->pdmnState->pubKeyOperator.Get().ToString()));
             obj.push_back(Pair(strOutpoint, objMN));
         } else if (strMode == "lastpaidblock") {
