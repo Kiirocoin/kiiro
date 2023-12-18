@@ -31,7 +31,7 @@
     <message>
         <location filename="" line="+67"/>
         <source>C&amp;lose</source>
-        <translation>Tutup</translation>
+        <translation>T&amp;utup</translation>
     </message>
     <message>
         <location filename="" line="-53"/>
@@ -71,12 +71,12 @@
     <message>
         <location filename="" line="+6"/>
         <source>Sending addresses</source>
-        <translation>Mengirim alamat</translation>
+        <translation>Alamat pengiriman</translation>
     </message>
     <message>
         <location filename="" line="+1"/>
         <source>Receiving addresses</source>
-        <translation>Menerima alamat</translation>
+        <translation>Alamat penerimaan</translation>
     </message>
     <message>
         <location filename="" line="+7"/>
@@ -116,7 +116,7 @@
     <message>
         <location filename="" line="+13"/>
         <source>Exporting Failed</source>
-        <translation>Mengekspor Gagal</translation>
+        <translation>Gagal Mengekspor</translation>
     </message>
     <message>
         <location filename="" line="+1"/>
