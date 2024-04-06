@@ -816,6 +816,9 @@ void BlockAssembler::FillFoundersReward(CMutableTransaction &coinbaseTx, bool fM
 
     		FundPayment communityFundPayment = params.nCommunityFundPayment;
             communityFundPayment.FillFundPayment(coinbaseTx, nHeight, nAmount,pblock->txoutCommunity);
+
+    		FundPayment dataMiningFundPayment = params.nDataMiningFundPayment;
+            dataMiningFundPayment.FillFundPayment(coinbaseTx, nHeight, nAmount,pblock->txoutDataMining);
         }
         else {
             // Stage 2

@@ -23,7 +23,7 @@ CAmount FundPayment::getFundPaymentAmount(int blockHeight, CAmount blockReward) 
 	 }
 	 for(int i = 0; i < rewardStructures.size(); i++) {
 		 FundRewardStructure rewardStructure = rewardStructures[i];
-		 if(rewardStructure.blockHeight == INT_MAX || blockHeight <= rewardStructure.blockHeight) {
+		 if(rewardStructure.blockHeight == INT_MAX || blockHeight  < rewardStructure.blockHeight) {
 			 return blockReward * rewardStructure.rewardPercentage / 100;
 		 }
 	 }

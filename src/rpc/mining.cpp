@@ -571,7 +571,8 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_CLIENT_P2P_DISABLED, "Error: Peer-to-peer functionality missing or disabled");
 
     if (g_connman->GetNodeCount(CConnman::CONNECTIONS_ALL) == 0)
-        throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "Kiirocoin is not connected!");
+        if(Params().NetworkIDString() == "main") 
+            throw JSONRPCError(RPC_CLIENT_NOT_CONNECTED, "Kiirocoin is not connected!");
 
     if (IsInitialBlockDownload())
         throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Kiirocoin is downloading blocks...");
@@ -847,6 +848,46 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     result.push_back(Pair("znode", masternodeObj));
     result.push_back(Pair("znode_payments_started", true));
     result.push_back(Pair("znode_payments_enforced", true));
+
+
+    UniValue communityObj(UniValue::VOBJ);
+	FundPayment communityFundPayment = Params().GetConsensus().nCommunityFundPayment;
+	if(pblock->txoutCommunity != CTxOut()) {
+		CTxDestination address;
+		ExtractDestination(pblock->txoutCommunity.scriptPubKey, address);
+		CBitcoinAddress address2(address);
+		communityObj.push_back(Pair("payee", address2.ToString().c_str()));
+		communityObj.push_back(Pair("script", HexStr(pblock->txoutCommunity.scriptPubKey.begin(), pblock->txoutCommunity.scriptPubKey.end())));
+		communityObj.push_back(Pair("amount", pblock->txoutCommunity.nValue));
+	}
+	result.push_back(Pair("community", communityObj));
+	result.push_back(Pair("community_payments_started", pindexPrev->nHeight + 1 >= communityFundPayment.getStartBlock()));
+
+    UniValue developmentObj(UniValue::VOBJ);
+	FundPayment developmentFundPayment = Params().GetConsensus().nCommunityFundPayment;
+	if(pblock->txoutDevelopment != CTxOut()) {
+		CTxDestination address;
+		ExtractDestination(pblock->txoutDevelopment.scriptPubKey, address);
+		CBitcoinAddress address2(address);
+		developmentObj.push_back(Pair("payee", address2.ToString().c_str()));
+		developmentObj.push_back(Pair("script", HexStr(pblock->txoutDevelopment.scriptPubKey.begin(), pblock->txoutDevelopment.scriptPubKey.end())));
+		developmentObj.push_back(Pair("amount", pblock->txoutDevelopment.nValue));
+	}
+	result.push_back(Pair("developer", developmentObj));
+	result.push_back(Pair("developer_payments_started", pindexPrev->nHeight + 1 >= communityFundPayment.getStartBlock()));
+
+    UniValue dataMiningtObj(UniValue::VOBJ);
+	FundPayment dataMiningFundPayment = Params().GetConsensus().nDataMiningFundPayment;
+	if(pblock->txoutDataMining != CTxOut()) {
+		CTxDestination address;
+		ExtractDestination(pblock->txoutDataMining.scriptPubKey, address);
+		CBitcoinAddress address2(address);
+		dataMiningtObj.push_back(Pair("payee", address2.ToString().c_str()));
+		dataMiningtObj.push_back(Pair("script", HexStr(pblock->txoutDataMining.scriptPubKey.begin(), pblock->txoutDataMining.scriptPubKey.end())));
+		dataMiningtObj.push_back(Pair("amount", pblock->txoutDataMining.nValue));
+	}
+	result.push_back(Pair("datamining", dataMiningtObj));
+	result.push_back(Pair("datamining_payments_started", pindexPrev->nHeight + 1 >= dataMiningFundPayment.getStartBlock()));
 
     if (pindexPrev->nHeight+1 >= Params().GetConsensus().DIP0003Height) {
         result.push_back(Pair("coinbase_payload", HexStr(pblock->vtx[0]->vExtraPayload)));
