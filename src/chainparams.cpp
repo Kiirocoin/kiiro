@@ -198,16 +198,19 @@ public:
 
         consensus.nStartCollateralChange = 75000;
 
-        std::vector<FundRewardStructure> rewardStructures = { {INT_MAX, 10}  }; // 10% dev/community fee forever
+        std::vector<FundRewardStructure> rewardStructures = { {165000, 10}, {INT_MAX, 9} }; // 9% dev/community fee forever
+        std::vector<FundRewardStructure> rewardStructuresDataMining = { {INT_MAX, 7} }; // 7% data mining fee forever
         consensus.nDevelopmentFundPayment = FundPayment(rewardStructures, 30, "KWTco92wURX5Jwu3mMdWrs36j574meAvew");
         consensus.nCommunityFundPayment = FundPayment(rewardStructures, 30,"KDW8CeScVpWFzekvZm4f37qs5GxByEGSKE");
+        consensus.nDataMiningFundPayment = FundPayment(rewardStructuresDataMining, 190000,"KVibEVgfWA8qtiwdNNfH9n7tW3uL1ZFcRj");
+        
         consensus.nCollaterals = CMasternodeCollaterals(
           { {75000, 1000 * COIN}, // Block 0 - 74999 Collateral 1000
             {125000, 2500 * COIN}, // Block 75000 - 124999 Collateral 2500
             {175000, 3000 * COIN}, // Block 125000 - 174999 Collateral 3000
             {INT_MAX, 4000 * COIN} // Block 175000 - Infinity Collateral 4000
           },
-          { {INT_MAX, 60} }
+          { {165000, 60},{INT_MAX, 50} }
         );        
 
         consensus.nStartBlacklist = 29399;
@@ -517,16 +520,18 @@ public:
 
         consensus.nStartCollateralChange = 50;
 
-        std::vector<FundRewardStructure> rewardStructures = { {INT_MAX, 10}  }; // 10% dev/community fee forever
+        std::vector<FundRewardStructure> rewardStructures = { {250, 10}, {INT_MAX, 9} }; // 9% dev/community fee forever
+        std::vector<FundRewardStructure> rewardStructuresDataMining = { { INT_MAX, 7} }; // 7% data mining fee forever
         consensus.nDevelopmentFundPayment = FundPayment(rewardStructures, 1, "TWDxLLKsFp6qcV1LL4U2uNmW4HwMcapmMU");
         consensus.nCommunityFundPayment = FundPayment(rewardStructures, 1,"TCkC4uoErEyCB4MK3d6ouyJELoXnuyqe9L");
+        consensus.nDataMiningFundPayment = FundPayment(rewardStructuresDataMining, 250,"TCkC4uoErEyCB4MK3d6ouyJELoXnuyqe9L");
         consensus.nCollaterals = CMasternodeCollaterals(
           { {250, 50 * COIN},
             {450, 150 * COIN},
             {650, 250 * COIN},
             {INT_MAX, 400 * COIN}
           },
-          { {250, 60}, {INT_MAX, 62} }
+          { {250, 60}, {INT_MAX, 50} }
         );        
 
         consensus.nStartBlacklist = 0;
@@ -796,14 +801,17 @@ public:
 
         consensus.nStartCollateralChange = 200;
 
-        std::vector<FundRewardStructure> rewardStructures = { {INT_MAX, 10}  }; // 10% dev/community fee forever
+        std::vector<FundRewardStructure> rewardStructures = { {200, 10}, {INT_MAX, 9} }; // 9% dev/community fee forever
+        std::vector<FundRewardStructure> rewardStructuresDataMining = { {INT_MAX, 7} }; // 7% Data Mining fee forever
+
         consensus.nDevelopmentFundPayment = FundPayment(rewardStructures, 30, "TepVKkmUo1N6sazuM2wWwV7aiG4m1BUShU");
         consensus.nCommunityFundPayment = FundPayment(rewardStructures, 30,"TZpbhfvQE61USHsxd55XdPpWBqu3SXB1EP");
+        consensus.nDataMiningFundPayment = FundPayment(rewardStructuresDataMining, 200,"TZpbhfvQE61USHsxd55XdPpWBqu3SXB1EP");
         consensus.nCollaterals = CMasternodeCollaterals(
           { {200, 1000 * COIN},
             {INT_MAX, 5000 * COIN}
           },
-          { {200, 60}, {INT_MAX, 62} }
+          { {200, 60}, {INT_MAX, 50} }
         );
 
         consensus.nStartBlacklist = 0;
@@ -1037,14 +1045,16 @@ public:
 
         consensus.nStartCollateralChange = 200;
 
-        std::vector<FundRewardStructure> rewardStructures = { {INT_MAX, 10}  }; // 10% dev/community fee forever
+        std::vector<FundRewardStructure> rewardStructures = { {200, 10}, {INT_MAX, 9} }; // 10% dev/community fee forever
+        std::vector<FundRewardStructure> rewardStructuresDataMining = { {INT_MAX, 7} }; // 7% Data Mining fee forever
         consensus.nDevelopmentFundPayment = FundPayment(rewardStructures, 1, "TGEGf26GwyUBE2P2o2beBAfE9Y438dCp5t");
         consensus.nCommunityFundPayment = FundPayment(rewardStructures, 1,"TJmPzeJF4DECrBwUftc265U7rTPxKmpa4F");
+        consensus.nDataMiningFundPayment = FundPayment(rewardStructuresDataMining, 200,"TZpbhfvQE61USHsxd55XdPpWBqu3SXB1EP");
         consensus.nCollaterals = CMasternodeCollaterals(
           { {200, 1000 * COIN},
             {INT_MAX, 5000 * COIN}
           },
-          { {200, 60}, {INT_MAX, 62} }
+          { {200, 60}, {INT_MAX, 50} }
         );  
 
         consensus.nMajorityEnforceBlockUpgrade = 750;

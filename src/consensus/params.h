@@ -170,6 +170,7 @@ struct Params {
 
     FundPayment nDevelopmentFundPayment;
     FundPayment nCommunityFundPayment;
+    FundPayment nDataMiningFundPayment;
     CMasternodeCollaterals nCollaterals;
 
     int nStartDuplicationCheck;
