@@ -198,7 +198,7 @@ public:
 
         consensus.nStartCollateralChange = 75000;
 
-        std::vector<FundRewardStructure> rewardStructures = { {165000, 10}, {INT_MAX, 9} }; // 9% dev/community fee forever
+        std::vector<FundRewardStructure> rewardStructures = { {190000, 10}, {INT_MAX, 9} }; // 9% dev/community fee forever
         std::vector<FundRewardStructure> rewardStructuresDataMining = { {INT_MAX, 7} }; // 7% data mining fee forever
         consensus.nDevelopmentFundPayment = FundPayment(rewardStructures, 30, "KWTco92wURX5Jwu3mMdWrs36j574meAvew");
         consensus.nCommunityFundPayment = FundPayment(rewardStructures, 30,"KDW8CeScVpWFzekvZm4f37qs5GxByEGSKE");
@@ -210,7 +210,7 @@ public:
             {175000, 3000 * COIN}, // Block 125000 - 174999 Collateral 3000
             {INT_MAX, 4000 * COIN} // Block 175000 - Infinity Collateral 4000
           },
-          { {165000, 60},{INT_MAX, 50} }
+          { {190000, 60},{INT_MAX, 50} }
         );        
 
         consensus.nStartBlacklist = 29399;
