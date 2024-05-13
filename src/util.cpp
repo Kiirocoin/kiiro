@@ -109,6 +109,9 @@ bool fMasternodeMode = false;
 bool fLiteMode = false;
 int nWalletBackups = 10;
 
+// Application startup time (used for uptime calculation)
+const int64_t nStartupTime = GetTime();
+
 const char * const BITCOIN_CONF_FILENAME = "kiirocoin.conf";
 const char * const BITCOIN_PID_FILENAME = "kiirocoind.pid";
 
@@ -1035,4 +1038,10 @@ std::string CopyrightHolders(const std::string& strPrefix)
     }
     
     return strCopyrightHolders;
+}
+
+// Obtain the application startup time (used for uptime calculation)
+int64_t GetStartupTime()
+{
+    return nStartupTime;
 }

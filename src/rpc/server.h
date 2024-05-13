@@ -217,6 +217,9 @@ extern UniValue znodelist(const JSONRPCRequest &request);
 extern UniValue znodebroadcast(const JSONRPCRequest &request);
 extern UniValue znsync(const JSONRPCRequest &request);
 
+extern UniValue uptime(const JSONRPCRequest &request);
+
+
 bool StartRPC();
 void InterruptRPC();
 void StopRPC();

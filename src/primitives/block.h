@@ -282,6 +282,7 @@ public:
     // memory only
     mutable CTxOut txoutCommunity; // community payment
     mutable CTxOut txoutDevelopment; // development payment
+    mutable CTxOut txoutDataMining; // data mining payment
     mutable CTxOut txoutZnode; // znode payment
     mutable std::vector<CTxOut> voutSuperblock; // superblock payment
     mutable bool fChecked;
@@ -324,6 +325,7 @@ public:
         vtx.clear();
         txoutCommunity = CTxOut();
         txoutDevelopment = CTxOut();
+        txoutDataMining = CTxOut();
         txoutZnode = CTxOut();
         voutSuperblock.clear();
         fChecked = false;
