@@ -345,13 +345,14 @@ public:
         assert(consensus.hashGenesisBlock == uint256S("0x4381deb85b1b2c9843c222944b616d997516dcbd6a964e1eaf0def0830695233"));
         assert(genesis.hashMerkleRoot == uint256S("0x365d2aa75d061370c9aefdabac3985716b1e3b4bb7c4af4ed54f25e5aaa42783"));
         vSeeds.push_back(CDNSSeedData("168.119.163.26", "168.119.163.26", false));
-        vSeeds.push_back(CDNSSeedData("37.27.16.153", "37.27.16.153", false));
+        vSeeds.push_back(CDNSSeedData("91.107.201.217", "91.107.201.217", false));
         vSeeds.push_back(CDNSSeedData("5.75.160.251", "5.75.160.251", false));
         vSeeds.push_back(CDNSSeedData("seed.kiirocoin.org", "seed.kiirocoin.org", false));
         vSeeds.push_back(CDNSSeedData("seed1.kiirocoin.org", "seed1.kiirocoin.org", false));
         vSeeds.push_back(CDNSSeedData("seed2.kiirocoin.org", "seed2.kiirocoin.org", false));
         vSeeds.push_back(CDNSSeedData("seed3.kiirocoin.org", "seed3.kiirocoin.org", false));
         vSeeds.push_back(CDNSSeedData("seed4.kiirocoin.org", "seed4.kiirocoin.org", false));
+	vSeeds.push_back(CDNSSeedData("seed5.kiirocoin.org", "seed5.kiirocoin.org", false));
         // Note that of those with the service bits flag, most only support a subset of possible options
         base58Prefixes[PUBKEY_ADDRESS] = std::vector < unsigned char > (1, 45);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector < unsigned char > (1, 7);
