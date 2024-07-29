@@ -209,7 +209,7 @@ public:
             {125000, 2500 * COIN}, // Block 75000 - 124999 Collateral 2500
             {175000, 3000 * COIN}, // Block 125000 - 174999 Collateral 3000
 	    {190000, 4000 * COIN}, // Block 190000 - 219999 Collateral 4000
-            {INT_MAX, 20000 * COIN} // Block 220000 - Infinity Collateral 4000
+            {INT_MAX, 20000 * COIN} // Block 220000 - Infinity Collateral 20000
           },
           { {220000, 60},{INT_MAX, 50} }
         );        
