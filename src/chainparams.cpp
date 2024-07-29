@@ -202,7 +202,7 @@ public:
         std::vector<FundRewardStructure> rewardStructuresDataMining = { {220000, 8}, {INT_MAX, 1} }; // 1% data mining fee forever	    
         consensus.nDevelopmentFundPayment = FundPayment(rewardStructures, 30, "KWTco92wURX5Jwu3mMdWrs36j574meAvew");
         consensus.nCommunityFundPayment = FundPayment(rewardStructures, 30,"KDW8CeScVpWFzekvZm4f37qs5GxByEGSKE");
-        consensus.nDataMiningFundPayment = FundPayment(rewardStructuresDataMining, 190000,"KKiiroBurningAddressDoNotUseYqtXv9");
+        consensus.nDataMiningFundPayment = FundPayment(rewardStructuresDataMining, 190000,"KVibEVgfWA8qtiwdNNfH9n7tW3uL1ZFcRj");
         
         consensus.nCollaterals = CMasternodeCollaterals(
           { {75000, 1000 * COIN}, // Block 0 - 74999 Collateral 1000
