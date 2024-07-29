@@ -211,7 +211,7 @@ public:
 	    {220000, 4000 * COIN}, // Block 190000 - 219999 Collateral 4000
             {INT_MAX, 20000 * COIN} // Block 220000 - Infinity Collateral 20000
           },
-          { {190000, 60}, {220000, 50}, {INT_MAX, 60} }
+          { {190000, 60}, {220000, 50}, {INT_MAX, 55} }
         );        
 
         consensus.nStartBlacklist = 29399;
