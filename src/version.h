@@ -52,7 +52,7 @@ static const int SHORT_IDS_BLOCKS_VERSION = 90013;
 static const int INVALID_CB_NO_BAN_VERSION = 90013;
 
 //! minimum version of official client to connect to
-static const int MIN_KIIRO_CLIENT_VERSION = 1000004; // 1.0.0.5
+static const int MIN_KIIRO_CLIENT_VERSION = 1000006; // 1.0.0.6
 
 //! introduction of DIP3/deterministic masternodes
 static const int DMN_PROTO_VERSION = 90030;
