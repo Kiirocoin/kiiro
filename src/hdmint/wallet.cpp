@@ -673,7 +673,7 @@ bool CHDMintWallet::SetLelantusMintSeedSeen(CWalletDB& walletdb, std::pair<uint2
 /**
  * Convert a 512-bit mint seed into a mint.
  *
- * See https://github.com/kiirocoinorg/kiirocoin/pull/392 for specification on mint generation.
+ * See https://github.com/kiirocoin/kiiro/pull/392 for specification on mint generation.
  *
  * @param mintSeed uint512 object of seed for mint
  * @param commit reference to public coin. Is set in this function

@@ -622,7 +622,7 @@ std::string HelpMessage(HelpMessageMode mode)
 
 std::string LicenseInfo()
 {
-    const std::string URL_SOURCE_CODE = "<https://github.com/kiirocoinorg/kiirocoin>";
+    const std::string URL_SOURCE_CODE = "<https://github.com/kiirocoin/kiiro>";
     const std::string URL_WEBSITE = "<https://kiirocoin.org/>";
 
     std::string copyright = CopyrightHolders(strprintf(_("Copyright (C) %i-%i"), 2016, COPYRIGHT_YEAR) + " ");

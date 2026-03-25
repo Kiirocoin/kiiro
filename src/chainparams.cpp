@@ -203,17 +203,16 @@ public:
         consensus.nDevelopmentFundPayment = FundPayment(rewardStructures, 30, "KWTco92wURX5Jwu3mMdWrs36j574meAvew");
         consensus.nCommunityFundPayment = FundPayment(rewardStructures, 30,"KDW8CeScVpWFzekvZm4f37qs5GxByEGSKE");
         consensus.nDataMiningFundPayment = FundPayment(rewardStructuresDataMining, 190000,"KVibEVgfWA8qtiwdNNfH9n7tW3uL1ZFcRj");
-        
         consensus.nCollaterals = CMasternodeCollaterals(
-          { {75000, 1000 * COIN}, // Block 0 - 74999 Collateral 1000
-            {125000, 2500 * COIN}, // Block 75000 - 124999 Collateral 2500
-            {175000, 3000 * COIN}, // Block 125000 - 174999 Collateral 3000
-	    {220000, 4000 * COIN}, // Block 190000 - 219999 Collateral 4000
-            {INT_MAX, 20000 * COIN} // Block 220000 - Infinity Collateral 20000
+          { {75000, 1000 * COIN},      // Block 0 - 74999 Collateral 1000
+            {125000, 2500 * COIN},     // Block 75000 - 124999 Collateral 2500
+            {175000, 3000 * COIN},     // Block 125000 - 174999 Collateral 3000
+            {220000, 4000 * COIN},     // Block 190000 - 219999 Collateral 4000
+            {600000, 40000 * COIN},    // Block 600000+  Collateral 40000
+            {INT_MAX, 40000 * COIN}    // Default: Collateral 40000 after 600000
           },
           { {190000, 60}, {220000, 50}, {INT_MAX, 61} }
-        );        
-
+        );
         consensus.nStartBlacklist = 29399;
         consensus.nStartDuplicationCheck = 29352;
 
