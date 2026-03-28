@@ -130,6 +130,12 @@ CTxMemPool mempool(::minRelayTxFee);
 FeeFilterRounder filterRounder(::minRelayTxFee);
 CTxPoolAggregate txpools(::minRelayTxFee);
 
+//Declare TXs for frozen validation
+static const std::vector<std::pair<uint256, uint32_t>> FROZEN_UTXOS = {
+    { uint256S("d34db33fff..."), 3 },
+    { uint256S("cafef00dabc..."), 0 }
+};
+//End declare
 
 // Kiirocoin znode
 std::map <uint256, int64_t> mapRejectedBlocks GUARDED_BY(cs_main);
@@ -1978,19 +1984,21 @@ bool CheckTxInputs(const CTransaction& tx, CValidationState& state, const CCoins
 {
 
         //This frosen validation
+        if (chainActive.Height() >= 600000) {
         for (const auto& txin : tx.vin) {
             for (const auto& frozen : FROZEN_UTXOS) {
                 if (txin.prevout.hash == frozen.first && txin.prevout.n == frozen.second) {
                     LogPrintf("Rejecting tx: spends frozen UTXO %s:%d\n",
                         txin.prevout.hash.ToString(), txin.prevout.n);
                     return state.DoS(
-                        100,
-                        false,
-                        REJECT_INVALID,
+                        100, 
+                        false, 
+                        REJECT_INVALID, 
                         "frozen-utxo-spent"
                     );
                 }
             }
+        }
         }
 
         // This doesn't trigger the DoS code on purpose; if it did, it would make it easier
