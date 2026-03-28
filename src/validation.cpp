@@ -130,6 +130,13 @@ CTxMemPool mempool(::minRelayTxFee);
 FeeFilterRounder filterRounder(::minRelayTxFee);
 CTxPoolAggregate txpools(::minRelayTxFee);
 
+// Place this at the top of validation.cpp or in a consensus_blacklist.h that you #include:
+static const std::vector<std::pair<uint256, uint32_t>> FROZEN_UTXOS = {
+    { uint256S("d34db33fff..."), 3 },      // Replace with your actual TXID and vout
+    { uint256S("1088c949cb5dedc8748a9c1202e38b980aa0eacbb8a950321a3992a7f8f9eccc"), 0 }
+    // Add more entries as needed
+};
+
 // Kiirocoin znode
 std::map <uint256, int64_t> mapRejectedBlocks GUARDED_BY(cs_main);
 
@@ -1975,6 +1982,23 @@ int GetSpendHeight(const CCoinsViewCache& inputs)
 namespace Consensus {
 bool CheckTxInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& inputs, int nSpendHeight)
 {
+
+        //This frosen validation
+        for (const auto& txin : tx.vin) {
+            for (const auto& frozen : FROZEN_UTXOS) {
+                if (txin.prevout.hash == frozen.first && txin.prevout.n == frozen.second) {
+                    LogPrintf("Rejecting tx: spends frozen UTXO %s:%d\n",
+                        txin.prevout.hash.ToString(), txin.prevout.n);
+                    return state.DoS(
+                        100,
+                        false,
+                        REJECT_INVALID,
+                        "frozen-utxo-spent"
+                    );
+                }
+            }
+        }
+
         // This doesn't trigger the DoS code on purpose; if it did, it would make it easier
         // for an attacker to attempt to split the network.
         if (!inputs.HaveInputs(tx))

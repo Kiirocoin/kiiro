@@ -1442,19 +1442,46 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         if (!vRecv.empty()) {
             vRecv >> LIMITED_STRING(strSubVer, MAX_SUBVERSION_LENGTH);
             cleanSubVer = SanitizeString(strSubVer);
-            int parsedVersion[4] = {0, 0, 0, 0};
-            if (sscanf(cleanSubVer.c_str(), "/Kiiroshi:%2d.%2d.%2d.%2d/",
-                    &parsedVersion[0], &parsedVersion[1], &parsedVersion[2], &parsedVersion[3]) >= 2) {
-                int peerClientVersion = parsedVersion[0]*1000000 + parsedVersion[1]*10000 + parsedVersion[2]*100 + parsedVersion[3];
-                if (peerClientVersion < MIN_KIIRO_CLIENT_VERSION) {
-                    LogPrintf("peerClientVersion: %d CLIENT_VERSION: %d MIN_KIIRO_CLIENT_VERSION: %d\n", peerClientVersion,CLIENT_VERSION, MIN_KIIRO_CLIENT_VERSION);
-                    connman.PushMessage(pfrom, CNetMsgMaker(INIT_PROTO_VERSION).Make(NetMsgType::REJECT, strCommand, REJECT_OBSOLETE, "This version is banned from the network"));
-                    pfrom->fDisconnect = 1;
-                    LOCK(cs_main);
-                    Misbehaving(pfrom->GetId(), 100);
-                    return false;
-                }
+//            int parsedVersion[4] = {0, 0, 0, 0};
+//            if (sscanf(cleanSubVer.c_str(), "/Kiiroshi:%2d.%2d.%2d.%2d/",
+//                    &parsedVersion[0], &parsedVersion[1], &parsedVersion[2], &parsedVersion[3]) >= 2) {
+//                int peerClientVersion = parsedVersion[0]*1000000 + parsedVersion[1]*10000 + parsedVersion[2]*100 + parsedVersion[3];
+//                if (peerClientVersion < MIN_KIIRO_CLIENT_VERSION) {
+//                    LogPrintf("peerClientVersion: %d CLIENT_VERSION: %d MIN_KIIRO_CLIENT_VERSION: %d\n", peerClientVersion,CLIENT_VERSION, MIN_KIIRO_CLIENT_VERSION);
+//                    connman.PushMessage(pfrom, CNetMsgMaker(INIT_PROTO_VERSION).Make(NetMsgType::REJECT, strCommand, REJECT_OBSOLETE, "This version is banned from the network"));
+//                    pfrom->fDisconnect = 1;
+//                    LOCK(cs_main);
+//                    Misbehaving(pfrom->GetId(), 100);
+//                    return false;
+//                }
+//            }
+
+        // Begn version check before and after 600000
+
+        int parsedVersion[4] = {0, 0, 0, 0};
+        if (sscanf(cleanSubVer.c_str(), "/Kiiroshi:%2d.%2d.%2d.%2d/",
+                &parsedVersion[0], &parsedVersion[1], &parsedVersion[2], &parsedVersion[3]) >= 2) {
+            int peerClientVersion = parsedVersion[0]*1000000 + parsedVersion[1]*10000 + parsedVersion[2]*100 + parsedVersion[3];
+
+            // Allow 1.0.0.6 (1000006) and 1.0.0.7 (1000007) up to block 600000
+            // Only allow 1.0.0.7 and above after block 600000
+            int nHeight = chainActive.Height();
+
+            if ((nHeight < 600000 && peerClientVersion < 1000006) ||
+                (nHeight >= 600000 && peerClientVersion < 1000007)) {
+
+                LogPrintf("Disconnecting peer %s with client version %d at block height %d (require >=%d before, >=%d after 600000)\n",
+                    pfrom->addr.ToString(), peerClientVersion, nHeight, 1000006, 1000007);
+                connman.PushMessage(pfrom, CNetMsgMaker(INIT_PROTO_VERSION).Make(NetMsgType::REJECT, strCommand, REJECT_OBSOLETE, "This version is banned from the network"));
+                pfrom->fDisconnect = 1;
+                LOCK(cs_main);
+                Misbehaving(pfrom->GetId(), 100);
+                return false;
             }
+        }
+
+        // End version check
+
         }
         if (!vRecv.empty()) {
             vRecv >> nStartingHeight;
@@ -1588,7 +1615,6 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
     if (strCommand == NetMsgType::VERACK)
     {
         pfrom->SetRecvVersion(std::min(pfrom->nVersion.load(), PROTOCOL_VERSION));
-
         if (!pfrom->fInbound) {
             // Mark this node as currently connected, so we update its timestamp later.
             LOCK(cs_main);
