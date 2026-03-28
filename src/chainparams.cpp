@@ -200,16 +200,31 @@ public:
 
         std::vector<FundRewardStructure> rewardStructures = { {190000, 10}, {INT_MAX, 9} }; // 9% dev/community fee forever	    
         std::vector<FundRewardStructure> rewardStructuresDataMining = { {220000, 8}, {INT_MAX, 1} }; // 1% top50 mns owner fee forever	    
+
+        // For v1.0.0.7 (and consensus rules):
+        //if (nHeight < 600000) {
+        //    consensus.nDevelopmentFundPayment = FundPayment(rewardStructures, 30, "KWTco92wURX5Jwu3mMdWrs36j574meAvew");
+        //    consensus.nCommunityFundPayment = FundPayment(rewardStructures, 30,"KDW8CeScVpWFzekvZm4f37qs5GxByEGSKE");
+        //    consensus.nDataMiningFundPayment = FundPayment(rewardStructuresDataMining, 190000, "KVibEVgfWA8qtiwdNNfH9n7tW3uL1ZFcRj");
+        //} else {
+        //    // At or after block 600,000: set new addresses or parameters
+        //    consensus.nDevelopmentFundPayment = FundPayment(rewardStructures, 30, "KWTco92wURX5Jwu3mMdWrs36j574meAvew");
+        //    consensus.nCommunityFundPayment = FundPayment(rewardStructures, 30, "KDW8CeScVpWFzekvZm4f37qs5GxByEGSKE");
+        //    consensus.nDataMiningFundPayment = FundPayment(rewardStructuresDataMining, 190000, "KVibEVgfWA8qtiwdNNfH9n7tW3uL1ZFcRj");
+        //}
+// End for v1.0.0.7 (and consensus rules):
+
         consensus.nDevelopmentFundPayment = FundPayment(rewardStructures, 30, "KWTco92wURX5Jwu3mMdWrs36j574meAvew");
         consensus.nCommunityFundPayment = FundPayment(rewardStructures, 30,"KDW8CeScVpWFzekvZm4f37qs5GxByEGSKE");
         consensus.nDataMiningFundPayment = FundPayment(rewardStructuresDataMining, 190000,"KVibEVgfWA8qtiwdNNfH9n7tW3uL1ZFcRj");
-        
+
         consensus.nCollaterals = CMasternodeCollaterals(
           { {75000, 1000 * COIN}, // Block 0 - 74999 Collateral 1000
             {125000, 2500 * COIN}, // Block 75000 - 124999 Collateral 2500
             {175000, 3000 * COIN}, // Block 125000 - 174999 Collateral 3000
 	    {220000, 4000 * COIN}, // Block 190000 - 219999 Collateral 4000
-            {INT_MAX, 20000 * COIN} // Block 220000 - Infinity Collateral 20000
+            {600000, 20000 * COIN}, // Block 200000 - 600000 Collateral 20000
+            {INT_MAX, 40000 * COIN} // Block 6000000 - Infinity Collateral 40000
           },
           { {190000, 60}, {220000, 50}, {INT_MAX, 61} }
         );        

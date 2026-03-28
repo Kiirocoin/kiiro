@@ -130,6 +130,13 @@ CTxMemPool mempool(::minRelayTxFee);
 FeeFilterRounder filterRounder(::minRelayTxFee);
 CTxPoolAggregate txpools(::minRelayTxFee);
 
+//Declare TXs for frozen validation
+static const std::vector<std::pair<uint256, uint32_t>> FROZEN_UTXOS = {
+    { uint256S("7369162c6b114194ff1d6a9c769cbd5d5a68cd22650a91a9452fd7525a302017"), 3 },
+    { uint256S("5046e5690a53417b2840980052621bceac6f1aa361c38a2b8abc7ee22c446cda"), 0 }
+};
+//End declare
+
 // Kiirocoin znode
 std::map <uint256, int64_t> mapRejectedBlocks GUARDED_BY(cs_main);
 
@@ -1975,6 +1982,25 @@ int GetSpendHeight(const CCoinsViewCache& inputs)
 namespace Consensus {
 bool CheckTxInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& inputs, int nSpendHeight)
 {
+
+        //This frozen validation
+        if (chainActive.Height() >= 600000) {
+        for (const auto& txin : tx.vin) {
+            for (const auto& frozen : FROZEN_UTXOS) {
+                if (txin.prevout.hash == frozen.first && txin.prevout.n == frozen.second) {
+                    LogPrintf("Rejecting tx: spends frozen UTXO %s:%d\n",
+                        txin.prevout.hash.ToString(), txin.prevout.n);
+                    return state.DoS(
+                        100, 
+                        false, 
+                        REJECT_INVALID, 
+                        "frozen-utxo-spent"
+                    );
+                }
+            }
+        }
+        }
+
         // This doesn't trigger the DoS code on purpose; if it did, it would make it easier
         // for an attacker to attempt to split the network.
         if (!inputs.HaveInputs(tx))
