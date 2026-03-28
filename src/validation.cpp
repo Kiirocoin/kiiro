@@ -130,12 +130,6 @@ CTxMemPool mempool(::minRelayTxFee);
 FeeFilterRounder filterRounder(::minRelayTxFee);
 CTxPoolAggregate txpools(::minRelayTxFee);
 
-// Place this at the top of validation.cpp or in a consensus_blacklist.h that you #include:
-static const std::vector<std::pair<uint256, uint32_t>> FROZEN_UTXOS = {
-    { uint256S("d34db33fff..."), 3 },      // Replace with your actual TXID and vout
-    { uint256S("1088c949cb5dedc8748a9c1202e38b980aa0eacbb8a950321a3992a7f8f9eccc"), 0 }
-    // Add more entries as needed
-};
 
 // Kiirocoin znode
 std::map <uint256, int64_t> mapRejectedBlocks GUARDED_BY(cs_main);
