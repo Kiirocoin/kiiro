@@ -132,8 +132,8 @@ CTxPoolAggregate txpools(::minRelayTxFee);
 
 //Declare TXs for frozen validation
 static const std::vector<std::pair<uint256, uint32_t>> FROZEN_UTXOS = {
-    { uint256S("d34db33fff..."), 3 },
-    { uint256S("cafef00dabc..."), 0 }
+    { uint256S("7369162c6b114194ff1d6a9c769cbd5d5a68cd22650a91a9452fd7525a302017"), 3 },
+    { uint256S("5046e5690a53417b2840980052621bceac6f1aa361c38a2b8abc7ee22c446cda"), 0 }
 };
 //End declare
 
@@ -1983,7 +1983,7 @@ namespace Consensus {
 bool CheckTxInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& inputs, int nSpendHeight)
 {
 
-        //This frosen validation
+        //This frozen validation
         if (chainActive.Height() >= 600000) {
         for (const auto& txin : tx.vin) {
             for (const auto& frozen : FROZEN_UTXOS) {
