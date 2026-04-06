@@ -132,8 +132,8 @@ CTxPoolAggregate txpools(::minRelayTxFee);
 
 //Declare TXs for frozen validation
 static const std::vector<std::pair<uint256, uint32_t>> FROZEN_UTXOS = {
-    { uint256S("7369162c6b114194ff1d6a9c769cbd5d5a68cd22650a91a9452fd7525a302017"), 3 },
-    { uint256S("5046e5690a53417b2840980052621bceac6f1aa361c38a2b8abc7ee22c446cda"), 0 },
+    { uint256S("6369162c6b114194ff1d6a9c769cbd5d5a68cd22650a91a9452fd7525a302018"), 3 },
+    { uint256S("5046e5690a53417b2840980052621bceac6f1aa361c38a2b8abc7ee22c446cdb"), 0 },
     { uint256S("df502d1a9890f4bf607eeb954edefd5ff054d96dc75b5dafaee5848fd752bea2"), 0 }
 
 };
